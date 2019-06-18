@@ -15,12 +15,12 @@ function setup {
 
 @test "Should run container and print message that the executed container contains installed ansible in 2.8 version" {
     #when
-    run docker run --name ansible_server_bats_test --rm ansible_server  ansible --version
+    run sudo docker run --name ansible_server_bats_test --rm ansible_server  ansible --version
 
     #then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = 'ansible 2.8.0.0' ]
+    [ "${lines[0]}" = 'ansible 2.8.1' ]
 }
 
 
