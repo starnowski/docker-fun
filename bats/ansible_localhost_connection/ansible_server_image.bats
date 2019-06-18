@@ -9,7 +9,7 @@ function setup {
   echo "Build ansible docker image" >&3
 
   # Build only image
-  sudo docker build -f $BATS_TEST_DIRNAME/../../images/ansible_server/Dockerfile -t ansible_server .
+  sudo docker build -t ansible_server $BATS_TEST_DIRNAME/../../images/ansible_server >&3
 }
 
 
