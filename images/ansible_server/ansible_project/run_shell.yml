@@ -2,5 +2,5 @@
   hosts: localhost
   connection: local
   tasks:
-    - name: Run command {{ command_to_run }}
+    - name: Run shell {{ command_to_run }}
       shell: "{{ command_to_run }}"
