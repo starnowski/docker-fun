@@ -42,12 +42,12 @@ function setup {
     [ "$status" -eq 0 ]
 }
 
-@test "Should run container and return exit code '7' passed by executed ansible 'shell' module" {
+@test "Should run container and return non-zero exit code passed by executed ansible 'shell' module" {
     #when
     run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e 'command_to_run="exit 7"' /project/run_shell.yml -vvv
 
     #then
     echo "output is --> $output <--"  >&3
-    [ "$status" -eq 7 ]
+    [ "$status" -ne 0 ]
 }
 
