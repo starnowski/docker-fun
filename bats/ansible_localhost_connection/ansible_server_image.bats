@@ -48,6 +48,6 @@ function setup {
 
     #then
     echo "output is --> $output <--"  >&3
-    [ "$status" -eq 0 ]
+    [ "$status" -eq 7 ]
 }
 
