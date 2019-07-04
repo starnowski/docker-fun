@@ -24,9 +24,9 @@ function setup {
     [ "${lines[0]}" = 'ansible 2.8.1' ]
 }
 
-@test "Should run container and print message that the executed container contains installed ansible in 2.8 version" {
+@test "Should run container and return exit code passed by executed ansible 'command' module" {
     #when
-    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e command_to_run='exit 0' /project/run_command.yml
+    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e command_to_run='ls' /project/run_command.yml
 
     #then
     echo "output is --> $output <--"  >&3

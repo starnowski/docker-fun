@@ -1,5 +1,6 @@
-hosts: localhost
-connection: local
-tasks:
-  - name: Run command {{ command_to_run }}
-    command: {{ command_to_run }}
+- name: Running command
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Run command {{ command_to_run }}
+      command: "{{ command_to_run }}"
