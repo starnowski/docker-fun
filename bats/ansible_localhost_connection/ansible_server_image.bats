@@ -35,7 +35,7 @@ function setup {
 
 @test "Should run container and return exit code '0' passed by executed ansible 'shell' module" {
     #when
-    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e command_to_run="exit 0" /project/run_shell.yml -vvv
+    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e 'command_to_run="exit 0"' /project/run_shell.yml -vvv
 
     #then
     echo "output is --> $output <--"  >&3
@@ -44,7 +44,7 @@ function setup {
 
 @test "Should run container and return exit code '7' passed by executed ansible 'shell' module" {
     #when
-    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e command_to_run="exit 7" /project/run_shell.yml -vvv
+    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server ansible-playbook -e 'command_to_run="exit 7"' /project/run_shell.yml -vvv
 
     #then
     echo "output is --> $output <--"  >&3
