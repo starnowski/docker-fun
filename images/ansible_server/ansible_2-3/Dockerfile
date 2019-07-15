@@ -8,7 +8,8 @@ RUN cd /usr/src/Python-2.7.16 && ./configure --enable-optimizations
 RUN yum -y install make
 RUN cd /usr/src/Python-2.7.16 && make altinstall
 RUN yum -y install epel-release
-RUN yum -y install python-pip
+RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && python2.7 get-pip.py
+RUN pip install ansible==2.3.3.0
 
 RUN mkdir /ansible
 WORKDIR /ansible
