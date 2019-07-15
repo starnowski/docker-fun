@@ -7,6 +7,8 @@ RUN cd /usr/src && wget https://www.python.org/ftp/python/2.7.16/Python-2.7.16.t
 RUN cd /usr/src/Python-2.7.16 && ./configure --enable-optimizations
 RUN yum -y install make
 RUN cd /usr/src/Python-2.7.16 && make altinstall
+RUN yum -y install epel-release
+RUN yum -y install python-pip
 
 RUN mkdir /ansible
 WORKDIR /ansible
