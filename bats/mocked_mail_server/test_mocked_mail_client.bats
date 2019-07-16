@@ -45,5 +45,6 @@ function setup {
 
 function teardown {
     sudo docker-compose down --volumes
+    rm -f $MOCKED_MAIL_SERVER_DIR/email/*.eml
     popd
 }
