@@ -24,7 +24,10 @@ function setup {
 
     # when
     # https://tecadmin.net/ways-to-send-email-from-linux-command-line/ - Sending mail
-    run sudo docker-compose exec centos_im mail -v -s "Test Subject" -S 'smtp=smtp://fakesmtp:1025' -S 'from=mister.tee@trash.com' szymon.tar@example.com
+    #run sudo docker-compose exec centos_im mail -v -s "Test Subject" -S 'smtp=smtp://fakesmtp:1025' -S 'from=mister.tee@trash.com' szymon.tar@example.com
+
+    # bash - https://stackoverflow.com/questions/35703317/docker-exec-write-text-to-file-in-container
+    run sudo docker-compose exec centos_im bash -c 'echo "test content" | mail -v -s "Test Subject" -S smtp=smtp://fakesmtp:25 -S from=mister.tee@trash.com szymon.tar@example.com'
 
     # then
     echo "output is --> $output <--"  >&3
