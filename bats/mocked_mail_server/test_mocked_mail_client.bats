@@ -4,6 +4,7 @@
 #
 # Tips about docker compose:
 # https://runnable.com/docker/advanced-docker-compose-configuration
+# http://nilhcem.com/FakeSMTP/
 #
 
 function setup {
@@ -23,7 +24,7 @@ function setup {
 
     # when
     # https://tecadmin.net/ways-to-send-email-from-linux-command-line/ - Sending mail
-    run sudo docker-compose exec centos_im mail -s "Test Subject" szymon.nosuch_mail@example.com
+    run sudo docker-compose exec centos_im mail -v -s "Test Subject" -S 'smtp=smtp://fakesmtp:1025' -S 'from=mister.tee@trash.com' szymon.tar@example.com
 
     # then
     echo "output is --> $output <--"  >&3
