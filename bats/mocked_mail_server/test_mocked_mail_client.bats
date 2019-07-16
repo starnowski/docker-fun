@@ -19,6 +19,8 @@ function setup {
 @test "Should run docker compose and send mail from container \"centos_im\" to mail server in \"mailhog\" container" {
     # given
     pushd  $MOCKED_MAIL_SERVER_DIR
+    # Checking if no email file (file with extension '.eml' )
+    [ ! -f $MOCKED_MAIL_SERVER_DIR/email/*.eml ]
     sudo docker-compose up --detach  >&3
     sudo docker-compose ps >&3
 
