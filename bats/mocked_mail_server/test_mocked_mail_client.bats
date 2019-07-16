@@ -32,6 +32,14 @@ function setup {
     # then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
+    grep 'From: mister.tee@trash.com' $MOCKED_MAIL_SERVER_DIR/email/*
+    [ "$?" -eq 0 ]
+    grep 'To: szymon.tar@example.com' $MOCKED_MAIL_SERVER_DIR/email/*
+    [ "$?" -eq 0 ]
+    grep 'Subject: Test Subject' $MOCKED_MAIL_SERVER_DIR/email/*
+    [ "$?" -eq 0 ]
+    grep 'test content' $MOCKED_MAIL_SERVER_DIR/email/*
+    [ "$?" -eq 0 ]
 }
 
 
