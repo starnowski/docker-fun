@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/starnowski/docker-fun.svg?branch=master)](https://travis-ci.org/starnowski/docker-fun)
+
 # docker-fun
 
 https://github.com/ansible/ansible-examples
