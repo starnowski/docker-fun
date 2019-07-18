@@ -21,15 +21,15 @@ function setup {
     pushd  $MOCKED_MAIL_SERVER_DIR
     # Checking if no email file (file with extension '.eml' )
     [ ! -f $MOCKED_MAIL_SERVER_DIR/email/*.eml ]
-    sudo docker-compose up --detach  >&3
-    sudo docker-compose ps >&3
+     docker-compose up --detach  >&3
+     docker-compose ps >&3
 
     # when
     # https://tecadmin.net/ways-to-send-email-from-linux-command-line/ - Sending mail
-    #run sudo docker-compose exec centos_im mail -v -s "Test Subject" -S 'smtp=smtp://fakesmtp:1025' -S 'from=mister.tee@trash.com' szymon.tar@example.com
+    #run  docker-compose exec centos_im mail -v -s "Test Subject" -S 'smtp=smtp://fakesmtp:1025' -S 'from=mister.tee@trash.com' szymon.tar@example.com
 
     # bash - https://stackoverflow.com/questions/35703317/docker-exec-write-text-to-file-in-container
-    run sudo docker-compose exec centos_im bash -c 'echo "test content" | mail -v -s "Test Subject" -S smtp=smtp://fakesmtp:25 -S from=mister.tee@trash.com szymon.tar@example.com'
+    run  docker-compose exec centos_im bash -c 'echo "test content" | mail -v -s "Test Subject" -S smtp=smtp://fakesmtp:25 -S from=mister.tee@trash.com szymon.tar@example.com'
 
     # then
     echo "output is --> $output <--"  >&3
@@ -46,7 +46,7 @@ function setup {
 
 
 function teardown {
-    sudo docker-compose down --volumes
+     docker-compose down --volumes
     rm -f $MOCKED_MAIL_SERVER_DIR/email/*.eml
     popd
 }
