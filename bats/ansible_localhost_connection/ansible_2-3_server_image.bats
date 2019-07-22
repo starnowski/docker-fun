@@ -16,7 +16,7 @@ function setup {
 
 @test "Should run container and print message that the executed container contains installed python in 2.7 version" {
     #when
-    run sudo docker run --name ansible_server_bats_test --rm ansible_server_2-3  python2.7 -V
+    run  sudo docker run --name ansible_server_bats_test --rm ansible_server_2-3  python2.7 -V
 
     #then
     echo "output is --> $output <--"  >&3
@@ -26,7 +26,7 @@ function setup {
 
 @test "Should run container and print message that the executed container contains installed ansible in 2.3.3.0 version" {
     #when
-    run sudo docker run --name ansible_server_bats_test --rm ansible_server_2-3  ansible --version
+    run sudo  docker run --name ansible_server_bats_test --rm ansible_server_2-3  ansible --version
 
     #then
     echo "output is --> $output <--"  >&3
@@ -36,7 +36,7 @@ function setup {
 
 @test "Should run container and return exit code passed by executed ansible 'command' module" {
     #when
-    run sudo docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server_2-3 ansible-playbook -e command_to_run='ls' /project/run_command.yml -vvv
+    run sudo  docker run --name ansible_server_bats_test -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server_2-3 ansible-playbook -e command_to_run='ls' /project/run_command.yml -vvv
 
     #then
     echo "output is --> $output <--"  >&3

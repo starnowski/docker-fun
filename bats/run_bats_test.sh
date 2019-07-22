@@ -2,7 +2,7 @@
 set -e
 
 #Run test
-bats -rt "$1"
+sudo bats -rt "$1"
 BATS_EXIT_CODE="$?"
 echo "bats exit code is $BATS_EXIT_CODE"
 exit "$BATS_EXIT_CODE"
