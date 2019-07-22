@@ -6,6 +6,7 @@ RUN apt-get update
 RUN apt-get install -y curl
 RUN apt-get install -y gcc wget
 RUN cd /usr/src && wget https://www.python.org/ftp/python/2.7.16/Python-2.7.16.tgz && tar xzf Python-2.7.16.tgz
+RUN apt-get install -y zlib1g-dev
 RUN cd /usr/src/Python-2.7.16 && ./configure --enable-optimizations
 RUN apt-get install -y make
 RUN cd /usr/src/Python-2.7.16 && make altinstall
