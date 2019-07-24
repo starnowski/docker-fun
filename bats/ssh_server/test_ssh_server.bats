@@ -28,7 +28,7 @@ function setup {
     # when
 
     #https://www.cyberciti.biz/faq/unix-linux-execute-command-using-ssh/
-    run sudo ssh root:root_pass@$DOCKER_CONTAINER_HOSTNAME whoami >&3
+    run ssh root:root_pass@$DOCKER_CONTAINER_HOSTNAME whoami >&3
 
     # then
     echo "output is --> $output <--"  >&3
