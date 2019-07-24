@@ -34,6 +34,6 @@ function setup {
 
 
 function teardown {
-    sudo docker rm $(sudo docker stop $(docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}"))
+    sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}"))
     popd
 }
