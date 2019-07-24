@@ -12,7 +12,7 @@ function setup {
 
   export SSH_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ssh_server"
   echo "dockerfile dir is $SSH_SERVER_DIR" >&3
-  docker build -t ubuntu_16_ssh $SSH_SERVER_DIR
+  sudo docker build -t ubuntu_16_ssh $SSH_SERVER_DIR
 }
 
 
