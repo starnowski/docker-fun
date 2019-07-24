@@ -3,13 +3,20 @@ FROM ubuntu:16.04
 
 RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
-#RUN echo 'root:root_pass' | chpasswd
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 RUN apt-get -y install openssh-client
-RUN mkdir /root/.ssh/
-RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa
 
+# Create user 'John'
+RUN useradd -m -p Kent John
+
+USER John
+
+RUN mkdir -p /home/John/.ssh
+RUN ssh-keygen -q -t rsa -N '' -f /home/John/.ssh/id_rsa
+RUN cat /home/John/.ssh/id_rsa.pub >> /home/John/.ssh/authorized_keys
+
+
+USER root
 # SSH login fix. Otherwise user is kicked off after login
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 
