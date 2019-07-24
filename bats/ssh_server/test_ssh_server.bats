@@ -72,12 +72,12 @@ function copy_non_root_user_ssh_private_key_from_container {
 
 
     # when
-    run ssh -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -ic 'printTestValue.sh $TEST_VALUE'
+    run ssh -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
 
     # then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "TEST_VALUE=_XXXX_$TIMESTAMP\n" ]
+    [[ "${lines[0]}" =~ 'Test values is '\[$TEST_VALUE.*\] ]]
 }
 
 
