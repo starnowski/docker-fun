@@ -33,7 +33,6 @@ function copy_non_root_user_ssh_private_key_from_container {
 
 @test "Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
     # given
-    #https://stackoverflow.com/questions/27504187/ssh-key-generation-using-dockerfile - generate ssh keys
     sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
@@ -44,6 +43,7 @@ function copy_non_root_user_ssh_private_key_from_container {
     copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa
     echo "Print root keys directory after owner changed"  >&3
     ls -la $BATS_TMPDIR/John_keys >&3
+    # print ssh server configuration
     sudo docker exec $DOCKER_CONTAINER_ID cat "/etc/ssh/sshd_config" >&3
 
     # when
@@ -55,6 +55,29 @@ function copy_non_root_user_ssh_private_key_from_container {
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
     [ "${lines[0]}" = 'John' ]
+}
+
+@test "Should print environment variable which was set for user when login via ssh and execute echo to print variable value" {
+    # given
+    sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
+    DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
+    DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
+
+    # copy ssh keys
+    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa
+    sudo docker exec $DOCKER_CONTAINER_ID bash -lc "echo export TEST_VALUE=_XXXX_$TIMESTAMP >> /home/John/.bashrc" >&3
+    # print .bashrc file for "John" user
+    #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/John/.bashrc" >&3
+    #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/John/.profile" >&3
+
+
+    # when
+    run ssh -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -ic 'printTestValue.sh $TEST_VALUE'
+
+    # then
+    echo "output is --> $output <--"  >&3
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "TEST_VALUE=_XXXX_$TIMESTAMP\n" ]
 }
 
 
