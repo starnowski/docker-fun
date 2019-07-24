@@ -49,7 +49,7 @@ function copy_non_root_user_ssh_private_key_from_container {
     # when
 
     #https://www.cyberciti.biz/faq/unix-linux-execute-command-using-ssh/
-    run ssh -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John $DOCKER_CONTAINER_HOSTNAME whoami >&3
+    run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John $DOCKER_CONTAINER_HOSTNAME whoami >&3
 
     # then
     echo "output is --> $output <--"  >&3
@@ -72,7 +72,7 @@ function copy_non_root_user_ssh_private_key_from_container {
 
 
     # when
-    run ssh -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
+    run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
 
     # then
     echo "output is --> $output <--"  >&3
