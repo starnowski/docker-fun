@@ -19,7 +19,6 @@ function setup {
 
 @test "Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
     # given
-    pushd  $SSH_SERVER_DIR
     #https://stackoverflow.com/questions/27504187/ssh-key-generation-using-dockerfile - generate ssh keys
     sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
     DOCKER_CONTAINER_ID=$(sudo docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}")
@@ -52,5 +51,4 @@ function setup {
 
 function teardown {
     sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}"))
-    popd
 }
