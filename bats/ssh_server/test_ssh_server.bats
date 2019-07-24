@@ -16,15 +16,19 @@ function setup {
 }
 
 
-@test "Should run docker compose and be able to login via ssh as root user and execute echo \"whoami\" command" {
+@test "Should run docker container and be able to login via ssh as root user and execute echo \"whoami\" command" {
     # given
     pushd  $SSH_SERVER_DIR
     sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
+    DOCKER_CONTAINER_ID=$(sudo docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}")
+    echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
+    DOCKER_CONTAINER_HOSTNAME=$(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test_sshd) >&3
+    echo "Docker container hostname is $DOCKER_CONTAINER_HOSTNAME" >&3
 
     # when
 
     #https://www.cyberciti.biz/faq/unix-linux-execute-command-using-ssh/
-    run  ssh root@root_pass whoami >&3
+    run sudo ssh root:root_pass@$DOCKER_CONTAINER_HOSTNAME whoami >&3
 
     # then
     echo "output is --> $output <--"  >&3
