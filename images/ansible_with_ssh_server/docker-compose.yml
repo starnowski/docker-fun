@@ -3,9 +3,9 @@ services:
   test_ssh_server:
     build: ./../ssh_server
     container_name: test_ssh_server-container
-
     tty: true
+
   ansible_machine:
     build: ./../ansible_server
     container_name: ansible_machine-container
-
+    tty: true
