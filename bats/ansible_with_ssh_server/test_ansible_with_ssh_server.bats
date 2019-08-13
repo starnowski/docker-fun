@@ -11,12 +11,13 @@ function setup {
   export TIMESTAMP=`date +%s`
 
   export ANSIBLE_WITH_SSH_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ansible_with_ssh_server"
+  export ANSIBLE_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ansible_server"
   echo "docker compose dir is $ANSIBLE_WITH_SSH_SERVER_DIR" >&3
   mkdir -p $BATS_TMPDIR/John_keys
 }
 
 function resolve_ssh_server_container_id_by_image_name {
-    echo $(sudo docker ps -a -q --filter name=test_ssh_server-container --format="{{.ID}}")
+    echo $(sudo docker ps -a -q --filter name=test_ssh_server_container --format="{{.ID}}")
 }
 
 function resolve_ssh_server_container_id_by_service_name {
@@ -46,7 +47,8 @@ function copy_non_root_user_ssh_private_key_from_container {
     copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa >&3
 
     # when
-    run  docker-compose exec ansible_machine ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e "hosts_group=ssh_server" /project/run_shell_on_any_hosts.yml -vvv
+    run  docker-compose exec ansible_machine ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e 'hosts_group=test_ssh_server' /project/run_shell_on_any_hosts.yml -vvv --list-hosts
+    #run  docker-compose exec ansible_machine ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e 'hosts_group=test_ssh_server_container' /project/run_shell_on_any_hosts.yml -vvv --list-hosts
 
     # then
     echo "output is --> $output <--"  >&3
