@@ -9,3 +9,5 @@ services:
     build: ./../ansible_server
     container_name: ansible_machine-container
     tty: true
+    volumes:
+      - $ANSIBLE_SERVER_DIR/ansible_project:/project
