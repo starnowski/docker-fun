@@ -2,12 +2,12 @@ version: '2'
 services:
   test_ssh_server:
     build: ./../ssh_server
-    container_name: test_ssh_server-container
+    container_name: test_ssh_server_container
     tty: true
 
   ansible_machine:
     build: ./../ansible_server
-    container_name: ansible_machine-container
+    container_name: ansible_machine_container
     tty: true
     volumes:
       - $ANSIBLE_SERVER_DIR/ansible_project:/project
