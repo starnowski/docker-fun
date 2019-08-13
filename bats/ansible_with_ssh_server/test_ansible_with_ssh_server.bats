@@ -41,7 +41,7 @@ function copy_non_root_user_ssh_private_key_from_container {
 
     # when
 
-    run  docker-compose exec ansible_machine ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e "hosts_group="ssh_server" /project/run_shell_on_any_hosts.yml -vvv
+    run  docker-compose exec ansible_machine ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e "hosts_group=ssh_server" /project/run_shell_on_any_hosts.yml -vvv
 
     # then
     echo "output is --> $output <--"  >&3
