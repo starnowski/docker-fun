@@ -15,7 +15,7 @@ function setup {
 }
 
 function resolve_ssh_server_container_id_by_image_name {
-    echo $(sudo docker ps -a -q --filter ancestor=test_ssh_server --format="{{.ID}}")
+    echo $(sudo docker ps -a -q --filter name=test_ssh_server-container --format="{{.ID}}")
 }
 
 function copy_non_root_user_ssh_private_key_from_container {
@@ -37,11 +37,11 @@ function copy_non_root_user_ssh_private_key_from_container {
     echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
 
     # copy ssh keys
-    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa
+    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa >&3
 
     # when
 
-    run  docker-compose exec ansible_machine ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e "hosts_group=ssh_server" /project/run_shell_on_any_hosts.yml -vvv
+    run  docker-compose exec ansible_machine-container ansible-playbook -e 'command_to_run="echo test1 > /home/John/test1_output"' -e "hosts_group=ssh_server" /project/run_shell_on_any_hosts.yml -vvv
 
     # then
     echo "output is --> $output <--"  >&3
