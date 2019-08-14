@@ -4,6 +4,8 @@ services:
     build: ./../ssh_server
     container_name: test_ssh_server_container
     tty: true
+    volumes:
+      - ssh_keys_volume:/ssh_keys_vol/:rw
 
   ansible_machine:
     build: ./../ansible_server
@@ -11,3 +13,7 @@ services:
     tty: true
     volumes:
       - $ANSIBLE_SERVER_DIR/ansible_project:/project
+      - ssh_keys_volume:/ssh_keys_vol/:ro
+
+volumes:
+  ssh_keys_volume:
