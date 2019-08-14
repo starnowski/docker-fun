@@ -45,10 +45,12 @@ function copy_non_root_user_ssh_private_key_from_container {
 
     # copy ssh keys
     copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa >&3
+    docker-compose exec test_ssh_server cp /home/John/.ssh/id_rsa /ssh_keys_vol/id_rsa >&3
+    docker-compose exec ansible_machine ls /ssh_keys_vol >&3
 
     # when
     # https://stackoverflow.com/questions/18195142/safely-limiting-ansible-playbooks-to-a-single-machine - Setting host group
-    run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e 'command_to_run="echo test1 > /home/John/test1_output"' -e 'hosts_group=test_ssh_server_group' /project/run_shell_on_any_hosts.yml -vvv
+    run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e 'command_to_run="whoami"' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/run_shell_on_any_hosts.yml -vvv
 
     # then
     echo "output is --> $output <--"  >&3
