@@ -60,6 +60,9 @@ function copy_non_root_user_ssh_private_key_from_container {
     # then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
+    echo "$output" > $BATS_TMPDIR/output_ansible
+    grep '"stdout": "John"' $BATS_TMPDIR/output_ansible >&3
+    [ "$?" -eq 0 ]
 }
 
 
