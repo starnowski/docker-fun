@@ -1,0 +1,5 @@
+- name: Running command
+  hosts: "{{ hosts_group }}"
+  tasks:
+    - name: Run shell {{ command_to_run }}
+      shell: "{{ command_to_run }}"

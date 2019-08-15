@@ -14,6 +14,7 @@ RUN apt-get install -y make
 RUN cd /usr/src/Python-2.7.16 && make altinstall
 RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && python2.7 get-pip.py
 RUN pip install ansible==2.8.1
+RUN apt-get install -y openssh-client
 
 RUN mkdir /ansible
 WORKDIR /ansible
