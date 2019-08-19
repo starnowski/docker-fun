@@ -13,7 +13,6 @@ function setup {
   sudo docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
 }
 
-
 @test "Should create script with passed command" {
     # given
     #docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
