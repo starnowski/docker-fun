@@ -1,0 +1,10 @@
+- name: Create script file
+  hosts: localhost
+  connection: local
+  tasks:
+    - include_tasks: tasks/create_shell_script.yml
+    - name: Change file access for test
+      file:
+        state: file
+        path: "{{ _script_path }}"
+        mode: '0777'
