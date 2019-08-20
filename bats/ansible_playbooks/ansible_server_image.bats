@@ -70,12 +70,14 @@ function setup {
     echo "output is --> $output <--"  >&3
     [ "${lines[0]}" = "777 $BATS_TMPDIR/$TIMESTAMP/result_file.xxx" ]
     run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
-    # check that script file was deleted after command execution
     echo "file output is --> $output <--"  >&3
     [ -n "${lines[0]}" ]
     SCRIPT_FILE_PATH="${lines[0]}"
-    sudo docker cp ansible_server_bats_test:$SCRIPT_FILE_PATH $BATS_TMPDIR/$TIMESTAMP/script_file.sh
-    ! [ -e "$BATS_TMPDIR/$TIMESTAMP/script_file.sh" ]
+
+    # check that script file was deleted after command execution
+    # script file should not exist
+    run sudo docker exec ansible_server_bats_test test -e $SCRIPT_FILE_PATH
+    [ "$status" -ne 0 ]
 }
 
 function teardown {
