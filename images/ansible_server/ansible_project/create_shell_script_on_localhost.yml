@@ -8,3 +8,4 @@
         state: file
         path: "{{ _script_path }}"
         mode: '0777'
+      when: _test_do_not_change_file_access is not defined and _test_do_not_change_file_access == "false"
