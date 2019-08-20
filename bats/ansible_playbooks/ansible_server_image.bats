@@ -46,6 +46,19 @@ function setup {
     [ "${lines[0]}" = "700 $BATS_TMPDIR/$TIMESTAMP/tmp_script.sh" ]
 }
 
+@test "Should create script with passed command and run command on docker container" {
+    # given
+    #docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
+
+    #when
+    sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_command="touch /result_dir/result_file.xxx && chmod 700 /result_dir/result_file.xxx"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+    run stat -c "%a %n" $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
+
+    #then
+    echo "output is --> $output <--"  >&3
+    [ "${lines[0]}" = "700 $BATS_TMPDIR/$TIMESTAMP/result_file.xxx" ]
+}
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
 }
