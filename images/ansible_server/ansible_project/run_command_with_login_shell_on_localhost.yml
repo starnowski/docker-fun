@@ -1,0 +1,5 @@
+- name: Run passed command
+  hosts: localhost
+  connection: local
+  tasks:
+    - include_tasks: run_command_with_login_shell.yml

@@ -1,0 +1,10 @@
+- name: Create temporary file
+  tempfile:
+    state: file
+    suffix: sh
+  register: tempfile_output
+- include_tasks: tasks/create_shell_script.yml
+  vars:
+    _script_path: "{{ tempfile_output.path }}"
+- name: "Running script {{ tempfile_output.path }}"
+  command: "{{ tempfile_output.path }}"
