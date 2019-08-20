@@ -1,0 +1,6 @@
+- name: Create script for command {{ _command }}
+  # https://docs.ansible.com/ansible/latest/modules/template_module.html
+  template:
+    src: templates/script.sh.j2
+    dest: "{{ _script_path }}"
+    mode: '0700'
