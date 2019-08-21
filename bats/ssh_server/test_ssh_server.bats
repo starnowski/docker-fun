@@ -31,6 +31,20 @@ function copy_non_root_user_ssh_private_key_from_container {
     chmod 600 $2
 }
 
+#
+# Function used to remove belowed error with changed the docker hostname during login via ssh command.
+# https://www.cyberciti.biz/faq/warning-remote-host-identification-has-changed-error-and-solution/
+#
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@ WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED! @
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+#
+#
+function remove_ssh_key_for_docker_container_hostname {
+    ssh-keygen -R $1
+}
+
 @test "Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
     # given
     sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
@@ -45,6 +59,7 @@ function copy_non_root_user_ssh_private_key_from_container {
     ls -la $BATS_TMPDIR/John_keys >&3
     # print ssh server configuration
     sudo docker exec $DOCKER_CONTAINER_ID cat "/etc/ssh/sshd_config" >&3
+    remove_ssh_key_for_docker_container_hostname $DOCKER_CONTAINER_HOSTNAME
 
     # when
 
@@ -69,7 +84,7 @@ function copy_non_root_user_ssh_private_key_from_container {
     # print .bashrc file for "John" user
     #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/John/.bashrc" >&3
     #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/John/.profile" >&3
-
+    remove_ssh_key_for_docker_container_hostname $DOCKER_CONTAINER_HOSTNAME
 
     # when
     run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
