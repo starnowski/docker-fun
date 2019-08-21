@@ -80,6 +80,17 @@ function setup {
     [ "$status" -ne 0 ]
 }
 
+@test "Should create script with passed command and run it in shell login mode" {
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_command="shopt -q login_shell && echo \"Login shell\" | tee /result_dir/result_file.xxx || echo \"Not login shell\" | tee /result_dir/result_file.xxx ; chmod 777 /result_dir/result_file.xxx"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+    echo "output is --> $output <--"  >&3
+
+    # then
+    run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
+    echo "output is --> $output <--"  >&3
+    [ "${lines[0]}" = "Login shell" ]
+}
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
