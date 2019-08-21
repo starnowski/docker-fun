@@ -1,0 +1,4 @@
+- name: Run passed command
+  hosts: "{{ hosts_group }}"
+  tasks:
+    - include_tasks: run_command_with_login_shell.yml
