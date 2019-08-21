@@ -98,13 +98,11 @@ function copy_non_root_user_ssh_private_key_from_container {
 
     # when
     # https://stackoverflow.com/questions/18195142/safely-limiting-ansible-playbooks-to-a-single-machine - Setting host group
-    #run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e '_command="shopt -q login_shell && echo \"Login shell\" | tee /result_dir/result_file.xxx || echo \"Not login shell\" | tee /result_dir/result_file.xxx ; chmod 777 /result_dir/result_file.xxx"' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/run_command_with_login_shell_on_any_hosts.yml -vvv
-    #run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e '_command="shopt -q login_shell && echo \"Login shell\" || echo \"Not login shell\" ; chmod 777 /result_dir/result_file.xxx; ls -la /result_dir"' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/run_command_with_login_shell_on_any_hosts.yml -vvv
-
-    run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e '_command="echo the value is $BASH_LOGINS_SHELL_TEST_VALUE; echo $BASH_LOGINS_SHELL_TEST_VALUE | tee -a /result_dir/result_file.xxx ; chmod 777 /result_dir/result_file.xxx"' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/run_command_with_login_shell_on_any_hosts.yml -vvv
+    run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e '_command="echo the value is $BASH_LOGINS_SHELL_TEST_VALUE; echo $BASH_LOGINS_SHELL_TEST_VALUE | tee /result_dir/result_file.xxx; chmod 777 /result_dir/result_file.xxx; ls -la /result_dir"' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/run_command_with_login_shell_on_any_hosts.yml -vvv
     echo "output is --> $output <--"  >&3
 
     # then
+    mkdir $BATS_TMPDIR/$TIMESTAMP
     sudo docker cp test_ssh_server_container:/result_dir/result_file.xxx $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     echo "output is --> $output <--"  >&3
