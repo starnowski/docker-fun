@@ -10,7 +10,7 @@ function setup {
   ANSIBLE_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ansible_server"
 
   # Build only image
-  sudo docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
+  $BATS_TEST_DIRNAME/build_ansible_server_image.sh $ANSIBLE_SERVER_DIR >&3
   mkdir -p $BATS_TMPDIR/$TIMESTAMP
   export STOP_DOCKER_CONTAINER_AFTER_TEST=
 }
