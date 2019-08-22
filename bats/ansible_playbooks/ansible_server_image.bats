@@ -10,7 +10,7 @@ function setup {
   ANSIBLE_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ansible_server"
 
   if [ "$ANSIBLE_SERVER_IMAGE_CREATED" = "true" ]; then
-    echo "Skipping image building"
+    echo "Skipping image building" >&3
   else
     # Build only image
     $BATS_TEST_DIRNAME/build_ansible_server_image.sh $ANSIBLE_SERVER_DIR >&3
