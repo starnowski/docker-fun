@@ -16,7 +16,6 @@ function setup {
 }
 
 @test "Should create script with passed command" {
-    
     # when
     sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_command="exit 7"' -e "_script_path=/result_dir/tmp_script.sh" /project/create_shell_script_on_localhost.yml -vvv
     run cat $BATS_TMPDIR/$TIMESTAMP/tmp_script.sh
@@ -33,18 +32,32 @@ function setup {
 }
 
 @test "Should create script with passed command and the script needs to be executable" {
-
     # when
     sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_test_do_not_change_file_access=true' -e '_command="exit 7"' -e "_script_path=/result_dir/tmp_script.sh" /project/create_shell_script_on_localhost.yml -vvv
     run stat -c "%a %n" $BATS_TMPDIR/$TIMESTAMP/tmp_script.sh
 
     # then
-    echo "output is --> $output <--"  >&3
+    echo "output is --> $output <--" >&3
     [ "${lines[0]}" = "700 $BATS_TMPDIR/$TIMESTAMP/tmp_script.sh" ]
 }
 
-@test "Should create script with passed command and run command on docker container" {
+@test "Should create script with passed command and return exit returned by internal code" {
 
+    # when
+    sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_command="./return_passed_exit_code.sh 55"' -e "_script_path=/result_dir/tmp_script.sh" /project/create_shell_script_on_localhost.yml -vvv
+    # script "./return_passed_exit_code.sh", passed to shell script, is located at $BATS_TEST_DIRNAME, that is why the directory change is required.
+    pushd $BATS_TEST_DIRNAME
+    run $BATS_TMPDIR/$TIMESTAMP/tmp_script.sh
+    popd
+
+    # then
+    echo "output is --> $output <--" >&3
+    echo "status is $status" >&3
+    [ "$status" -eq 55 ]
+    [ "${lines[0]}" = 'Returned code is 55' ]
+}
+
+@test "Should create script with passed command and run command on docker container" {
     # when
     sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_command="touch /result_dir/result_file.xxx && chmod 700 /result_dir/result_file.xxx"' /project/run_command_with_login_shell_on_localhost.yml -vvv
     run stat -c "%a %n" $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
@@ -58,7 +71,6 @@ function setup {
     # given
     export STOP_DOCKER_CONTAINER_AFTER_TEST=true
 
-
     # when
     sudo docker run --name ansible_server_bats_test -dt -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project ansible_server
 
@@ -67,7 +79,7 @@ function setup {
     run stat -c "%a %n" $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
 
     # then
-    echo "output is --> $output <--"  >&3
+    echo "output is --> $output <--" >&3
     [ "${lines[0]}" = "777 $BATS_TMPDIR/$TIMESTAMP/result_file.xxx" ]
     run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     echo "file output is --> $output <--"  >&3
