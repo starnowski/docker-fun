@@ -9,7 +9,7 @@
     vars:
       _script_path: "{{ tempfile_output.path }}"
   - name: "Running script {{ tempfile_output.path }}"
-    command: "{{ tempfile_output.path }}"
+    command: bash -lc "{{ tempfile_output.path }}"
   always:
   - name: "Deleting file {{ tempfile_output.path }}"
     file:

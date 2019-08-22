@@ -61,7 +61,7 @@ function setup {
 
     # when
     sudo docker run --name ansible_server_bats_test -dt -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project ansible_server
-    #sleep 5
+
     sudo docker exec ansible_server_bats_test  ansible-playbook -e '_command="echo \"script name is $0\" ; echo \"$0\" | tee /result_dir/result_file.xxx ; chmod 777 /result_dir/result_file.xxx"' /project/run_command_with_login_shell_on_localhost.yml -vvv
 
     run stat -c "%a %n" $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
@@ -78,6 +78,23 @@ function setup {
     # script file should not exist
     run sudo docker exec ansible_server_bats_test test -e $SCRIPT_FILE_PATH
     [ "$status" -ne 0 ]
+}
+
+@test "Should create script with passed command and run it in shell login mode" {
+    # given
+    export STOP_DOCKER_CONTAINER_AFTER_TEST=true
+    sudo docker run --name ansible_server_bats_test -dt -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project ansible_server
+    sudo docker exec ansible_server_bats_test bash -lc "echo \"export BASH_LOGINS_SHELL_TEST_VALUE=_XXXX_$TIMESTAMP\" >> /root/.bash_profile" >&3
+
+    # when
+    sudo docker exec ansible_server_bats_test  ansible-playbook -e '_command="echo the value is $BASH_LOGINS_SHELL_TEST_VALUE; echo $BASH_LOGINS_SHELL_TEST_VALUE | tee /result_dir/result_file.xxx; chmod 777 /result_dir/result_file.xxx; ls -la /result_dir"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+
+    echo "output is --> $output <--"  >&3
+
+    # then
+    run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
+    echo "output is --> $output <--"  >&3
+    [ "${lines[0]}" = "_XXXX_$TIMESTAMP" ]
 }
 
 function teardown {
