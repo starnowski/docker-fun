@@ -51,9 +51,10 @@ jobs:
       before_install:
         # Install bats-core with version 1.1.0 when package will be available (see https://github.com/bats-core/bats-core/issues/103)
         - .travis/bats/bats-core-installation.sh "$TRAVIS_BUILD_DIR/.travis/bats"
+        - bats/ansible_playbooks/build_ansible_server_image.sh images/ansible_server
       services:
         - docker
-      script: export PATH="$TRAVIS_BUILD_DIR/.travis/bats/bats-core/bin:$PATH" && bats -rt bats/ansible_playbooks
+      script: export PATH="$TRAVIS_BUILD_DIR/.travis/bats/bats-core/bin:$PATH" && export ANSIBLE_SERVER_IMAGE_CREATED=true && bats -rt bats/ansible_playbooks
     - stage: "docker-compose"
       name: "ansible with ssh server"
       language: bash
