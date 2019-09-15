@@ -33,5 +33,7 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 
 COPY ./printTestValue.sh /bin/printTestValue.sh
 
+COPY ./startSSHAndCreateOptionallyUser.sh /bin/startSSHAndCreateOptionallyUser.sh
+
 EXPOSE 22
-ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["startSSHAndCreateOptionallyUser.sh"]
