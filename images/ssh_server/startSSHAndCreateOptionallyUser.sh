@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n "$OPTIONAL_SSH_USER"  ]; then
+if [ -n "$OPTIONAL_SSH_USER" ]; then
   echo "Creating user $OPTIONAL_SSH_USE"
   useradd -m -p Kent "$OPTIONAL_SSH_USER"
   mkdir -p "/home/$OPTIONAL_SSH_USER/.ssh"

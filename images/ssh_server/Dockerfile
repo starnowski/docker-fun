@@ -34,6 +34,7 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 COPY ./printTestValue.sh /bin/printTestValue.sh
 
 COPY ./startSSHAndCreateOptionallyUser.sh /bin/startSSHAndCreateOptionallyUser.sh
+ENV OPTIONAL_SSH_USER="${OPTIONAL_SSH_USER}"
 
 EXPOSE 22
-ENTRYPOINT ["startSSHAndCreateOptionallyUser.sh"]
+ENTRYPOINT ["sh", "-cl", "/bin/startSSHAndCreateOptionallyUser.sh"]

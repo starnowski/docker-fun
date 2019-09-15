@@ -25,7 +25,8 @@ function resolve_container_hostname_by_image_name {
 }
 
 function copy_non_root_user_ssh_private_key_from_container {
-    sudo docker cp $1:/home/John/.ssh/id_rsa $2
+    local _ssh_user=${3:-John}
+    sudo docker cp $1:/home/$_ssh_user/.ssh/id_rsa $2
     # change owner
     sudo chown $(whoami):$(whoami) $2
     chmod 600 $2
@@ -88,6 +89,29 @@ function remove_ssh_key_for_docker_container_hostname {
 
     # when
     run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/John_keys/id_rsa -o "StrictHostKeyChecking=no" -l John -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
+
+    # then
+    echo "output is --> $output <--"  >&3
+    [ "$status" -eq 0 ]
+    [[ "${lines[0]}" =~ 'Test values is '\[$TEST_VALUE.*\] ]]
+}
+
+@test "Should create user 'Mike' during container start up, the user which can login by ssh protocol" {
+    # given
+    sudo docker run -e OPTIONAL_SSH_USER=Mike -d -P --name test_sshd centos_7_ssh >&3
+    DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
+    DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
+
+    # copy ssh keys
+    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/Mike_keys/id_rsa Mike
+    sudo docker exec $DOCKER_CONTAINER_ID bash -lc "echo export TEST_VALUE=_XXXX_$TIMESTAMP >> /home/Mike/.bashrc" >&3
+    # print .bashrc file for "Mike" user
+    #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/Mike/.bashrc" >&3
+    #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/Mike/.profile" >&3
+    remove_ssh_key_for_docker_container_hostname $DOCKER_CONTAINER_HOSTNAME
+
+    # when
+    run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/Mike_keys/id_rsa -o "StrictHostKeyChecking=no" -l Mike -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
 
     # then
     echo "output is --> $output <--"  >&3
