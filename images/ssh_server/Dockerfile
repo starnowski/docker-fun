@@ -1,10 +1,10 @@
-FROM ubuntu:16.04
+FROM centos:centos7
 #https://docs.docker.com/engine/examples/running_ssh_service/
 
-RUN apt-get update && apt-get install -y openssh-server
+RUN yum install -y openssh-server
 RUN mkdir /var/run/sshd
 
-RUN apt-get -y install openssh-client
+RUN yum install -y openssh-clients
 
 # Create user 'John'
 RUN useradd -m -p Kent John
@@ -24,14 +24,6 @@ ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 COPY ./printTestValue.sh /bin/printTestValue.sh
-
-# Fixing problems with locale on Travis CI :
-#
-# bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
-#
-#https://www.thomas-krenn.com/en/wiki/Perl_warning_Setting_locale_failed_in_Debian
-RUN apt-get install -y locales
-RUN locale-gen en_US.UTF-8
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
