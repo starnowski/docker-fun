@@ -12,12 +12,12 @@ function setup {
 
   export SSH_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ssh_server"
   echo "dockerfile dir is $SSH_SERVER_DIR" >&3
-  sudo docker build -t ubuntu_16_ssh $SSH_SERVER_DIR >&3
+  sudo docker build -t centos_7_ssh $SSH_SERVER_DIR >&3
   mkdir -p $BATS_TMPDIR/John_keys
 }
 
 function resolve_container_id_by_image_name {
-    echo $(sudo docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}")
+    echo $(sudo docker ps -a -q --filter ancestor=centos_7_ssh --format="{{.ID}}")
 }
 
 function resolve_container_hostname_by_image_name {
@@ -47,7 +47,7 @@ function remove_ssh_key_for_docker_container_hostname {
 
 @test "Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
     # given
-    sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
+    sudo docker run -d -P --name test_sshd centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
     DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
@@ -74,7 +74,7 @@ function remove_ssh_key_for_docker_container_hostname {
 
 @test "Should print environment variable which was set for user when login via ssh and execute echo to print variable value" {
     # given
-    sudo docker run -d -P --name test_sshd ubuntu_16_ssh >&3
+    sudo docker run -d -P --name test_sshd centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
 
@@ -97,5 +97,5 @@ function remove_ssh_key_for_docker_container_hostname {
 
 
 function teardown {
-    sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=ubuntu_16_ssh --format="{{.ID}}"))
+    sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=centos_7_ssh --format="{{.ID}}"))
 }
