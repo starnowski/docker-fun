@@ -6,6 +6,14 @@ RUN mkdir /var/run/sshd
 
 RUN yum install -y openssh-clients
 
+#
+# Could not load host key: /etc/ssh/ssh_host_rsa_key
+# Could not load host key: /etc/ssh/ssh_host_ecdsa_key
+# Could not load host key: /etc/ssh/ssh_host_ed25519_key
+#  sshd: no hostkeys available -- exiting.
+#
+RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N ''
+
 # Create user 'John'
 RUN useradd -m -p Kent John
 
@@ -26,4 +34,4 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 COPY ./printTestValue.sh /bin/printTestValue.sh
 
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/usr/sbin/sshd", "-D"]
