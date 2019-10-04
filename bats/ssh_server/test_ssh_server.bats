@@ -98,7 +98,7 @@ function remove_ssh_key_for_docker_container_hostname {
 
 @test "Should create user 'Mike' during container start up, the user which can login by ssh protocol" {
     # given
-    sudo docker run -e OPTIONAL_SSH_USER=Mike -d -P --name test_sshd centos_7_ssh >&3
+    sudo docker run -d -P --name test_sshd -e OPTIONAL_SSH_USER=Mike centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
 

@@ -26,3 +26,8 @@ To check if you are in an interactive shell:
 To check if you are in a login shell:
 
 shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'
+
+
+
+
+https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/

@@ -1,5 +1,30 @@
 #!/bin/bash
 
+set -Eeo pipefail
+
+# Call getopt to validate the provided input.
+options=$(getopt -o "" --long optional_ssh_user: -- "$@")
+[ $? -eq 0 ] || {
+    echo "Incorrect options provided"
+    exit 1
+}
+eval set -- "$options"
+while true; do
+    case "$1" in
+    --optional_ssh_user)
+        shift; # The arg is next in position args
+        OPTIONAL_SSH_USER=$1
+        ;;
+    --)
+        shift
+        break
+        ;;
+    esac
+    shift
+done
+
+
+
 if [ -n "$OPTIONAL_SSH_USER" ]; then
   echo "Creating user $OPTIONAL_SSH_USE"
   useradd -m -p Kent "$OPTIONAL_SSH_USER"
