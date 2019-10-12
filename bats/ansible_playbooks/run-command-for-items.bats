@@ -31,7 +31,7 @@ function setup {
     [ `grep 'Finished test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output | wc -l ` == "1" ]
 
     # when
-    sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server run-command-for-items.sh "xx17:baba:let it go" '/project/test/print_text_and_exit_zero.sh "The item is \$CURRENT_ITEM" >> /result_dir/first_test'
+    sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh "xx17:baba:let it go" '/project/test/print_text_and_exit_zero.sh "The item is \$CURRENT_ITEM" >> /result_dir/first_test'
 
 
 }
