@@ -22,8 +22,13 @@ function setup {
 @test "should execute command for each item and returns exit code zero if execution for each item will succeed" {
     # given
     $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_zero.sh "Test 1 2 3" > $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output
+    [ "$?" = "0" ]
     [ `grep 'Test 1 2 3' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output | wc -l ` == "1" ]
-    #$BATS_TEST_DIRNAME/../../ansible_project/test/print_text_and_exit_zero.sh "Finished test" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output
+    [ `grep 'Finished test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output | wc -l ` == "0" ]
+    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_zero.sh "Finished test" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output
+    [ "$?" = "0" ]
+    [ `grep 'Test 1 2 3' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output | wc -l ` == "1" ]
+    [ `grep 'Finished test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output | wc -l ` == "1" ]
 
     # when
     # sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server  ansible-playbook -e '_command="exit 7"' -e "_script_path=/result_dir/tmp_script.sh" /project/create_shell_script_on_localhost.yml -vvv
