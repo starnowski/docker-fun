@@ -11,5 +11,6 @@
         msg: "{{ computed_command_items }}"
     - include_tasks: ./tasks/run_command_for_items/item_executor.yml
       with_items: "{{ computed_command_items }}"
+      when: _execute_command_parallel is not defined or not _execute_command_parallel
     - fail:
       when: _command_execution_failed
