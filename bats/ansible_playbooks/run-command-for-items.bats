@@ -51,26 +51,26 @@ function setup {
     [ `grep 'Finished failing test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "0" ]
     [ `grep 'Script should not fail' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "0" ]
 
-    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_zero.sh "Finished failing test" "Finished failing test" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output || script_failed="true"
+    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_non_zero.sh "Finished failing test" "Finished failing test" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output || script_failed="true"
     [ "$script_failed" == "true" ]
     [ `grep 'Fail 76' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
     [ `grep 'Finished failing test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
     [ `grep 'Script should not fail' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "0" ]
 
-    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_zero.sh "Script should not fail" "xxxxx" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output
+    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_non_zero.sh "Script should not fail" "xxxxx" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output
     [ `grep 'Fail 76' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
     [ `grep 'Finished failing test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
     [ `grep 'Script should not fail' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
 
     # when
-    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb:zzz' '/project/test/print_text_and_exit_zero.sh "$CURRENT_ITEM" aaa >> /result_dir/second_test'
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" aaa >> /result_dir/second_test'
 
     echo "$output" >&3
     [ "$status" -ne "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
     echo "Test file output" >&3
     cat $BATS_TMPDIR/$TIMESTAMP/second_test >&3
-    [ `grep 'aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "0" ]
+    [ `grep 'aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
     [ `grep 'bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
     [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
