@@ -56,6 +56,28 @@ function waitUntilFinalFileWillBeCreated {
     [ -e $BATS_TMPDIR/$TIMESTAMP/l1_finished ]
 }
 
+@test "should run each command in parallel" {
+    # given
+    touch $BATS_TMPDIR/$TIMESTAMP/barrier1.lock
+    touch $BATS_TMPDIR/$TIMESTAMP/barrier2.lock
+    chmod 777 $BATS_TMPDIR/$TIMESTAMP/barrier1.lock
+    chmod 777 $BATS_TMPDIR/$TIMESTAMP/barrier2.lock
+
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'l3:l4:l1:l2' '/project/test/run_task_with_two_locks.sh  "$CURRENT_ITEM" /result_dir'
+
+    # then
+    echo "$output" >&3
+    [ "$status" -eq "0" ]
+    [ ! -e $BATS_TMPDIR/$TIMESTAMP/barrier1.lock ]
+    [ ! -e $BATS_TMPDIR/$TIMESTAMP/barrier2.lock ]
+    [ -e $BATS_TMPDIR/$TIMESTAMP/l1_finished ]
+    [ -e $BATS_TMPDIR/$TIMESTAMP/l2_finished ]
+    [ -e $BATS_TMPDIR/$TIMESTAMP/l3_finished ]
+    [ -e $BATS_TMPDIR/$TIMESTAMP/l4_finished ]
+}
+
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
