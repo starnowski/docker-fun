@@ -43,7 +43,7 @@ function setup {
     [ `grep 'let it go' $BATS_TMPDIR/$TIMESTAMP/first_test | wc -l ` == "1" ]
 }
 
-@test "should execute command for each item and returns exit code non zero when execution for even one command will failed" {
+@test "should execute command for each item and returns exit code non zero when execution for the first command will failed" {
     # given
     $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_non_zero.sh "Fail 76" "Fail 76" > $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output || script_failed="true"
     [ "$script_failed" == "true" ]
@@ -70,9 +70,39 @@ function setup {
     [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
     echo "Test file output" >&3
     cat $BATS_TMPDIR/$TIMESTAMP/second_test >&3
-    [ `grep 'aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
-    [ `grep 'bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
-    [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script failed: aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script succeeded: bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script succeeded: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+}
+
+@test "should execute command for each item and returns exit code non zero when execution for middle command will failed" {
+
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" bbb >> /result_dir/second_test'
+
+    echo "$output" >&3
+    [ "$status" -ne "0" ]
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
+    echo "Test file output" >&3
+    cat $BATS_TMPDIR/$TIMESTAMP/second_test >&3
+    [ `grep 'Script succeeded: aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script failed: bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script succeeded: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+}
+
+@test "should execute command for each item and returns exit code non zero when execution for the last command will failed" {
+
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" zzz >> /result_dir/second_test'
+
+    echo "$output" >&3
+    [ "$status" -ne "0" ]
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
+    echo "Test file output" >&3
+    cat $BATS_TMPDIR/$TIMESTAMP/second_test >&3
+    [ `grep 'Script succeeded: aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script succeeded: bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'Script failed: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
 
 function teardown {
