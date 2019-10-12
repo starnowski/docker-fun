@@ -1,0 +1,45 @@
+- set_fact:
+    _command_ignore_errors: True
+    _command: "{{ _loop_command }}"
+- block:
+  - name: Create temporary file
+    tempfile:
+      state: file
+      suffix: sh
+    register: tempfile_output
+  - include_tasks: tasks/create_shell_script.yml
+    vars:
+      _script_path: "{{ tempfile_output.path }}"
+  - name: "Running script {{ tempfile_output.path }}"
+    command: bash -lc "{{ tempfile_output.path }}"
+    vars:
+      CURRENT_ITEM: "{{ item }}"
+    async: 1000
+    poll: 0
+    register: _command_result_register
+    ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
+    with_items: "{{ computed_command_items }}"
+
+  - name: Check sync status
+    async_status:
+      jid: "{{ async_result_item.ansible_job_id }}"
+    loop: "{{ _command_result_register.results }}"
+    loop_control:
+      loop_var: "async_result_item"
+    register: async_poll_results
+    until: async_poll_results.finished
+    retries: 30
+
+
+
+  - set_fact:
+      _command_execution_failed: True
+    when: async_result_item.failed
+    loop: "{{ _command_result_register.results }}"
+    loop_control:
+      loop_var: "async_result_item"
+  always:
+  - name: "Deleting file {{ tempfile_output.path }}"
+    file:
+      path: "{{ tempfile_output.path }}"
+      state:  absent
