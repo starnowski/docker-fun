@@ -31,11 +31,13 @@ function setup {
     [ `grep 'Finished test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output | wc -l ` == "1" ]
 
     # when
-    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'xx17:baba:let it go' '/project/test/print_text_and_exit_zero.sh "The item is \$CURRENT_ITEM" >> /result_dir/first_test'
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'xx17:baba:let it go' '/project/test/print_text_and_exit_zero.sh "The item is $CURRENT_ITEM" >> /result_dir/first_test'
 
     echo "$output" >&3
     [ "$status" -eq "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/first_test" ]
+    echo "Test file output" >&3
+    cat $BATS_TMPDIR/$TIMESTAMP/first_test >&3
     [ `grep 'xx17' $BATS_TMPDIR/$TIMESTAMP/first_test | wc -l ` == "1" ]
     [ `grep 'baba' $BATS_TMPDIR/$TIMESTAMP/first_test | wc -l ` == "1" ]
     [ `grep 'let it go' $BATS_TMPDIR/$TIMESTAMP/first_test | wc -l ` == "1" ]
