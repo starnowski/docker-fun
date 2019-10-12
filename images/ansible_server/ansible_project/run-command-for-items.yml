@@ -1,0 +1,15 @@
+- name: Run passed command
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Split command items
+      set_fact:
+        computed_command_items: "{{ _command_items.split(':') }}"
+    - set_fact:
+        _command_execution_failed: False
+    - debug:
+        msg: "{{ computed_command_items }}"
+    - include_tasks: ./tasks/run_command_for_items/item_executor.yml
+      with_items: "{{ computed_command_items }}"
+    - fail:
+      when: _command_execution_failed

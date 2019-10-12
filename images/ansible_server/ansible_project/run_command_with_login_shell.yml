@@ -10,6 +10,8 @@
       _script_path: "{{ tempfile_output.path }}"
   - name: "Running script {{ tempfile_output.path }}"
     command: bash -lc "{{ tempfile_output.path }}"
+    register: _command_result_register
+    ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
   always:
   - name: "Deleting file {{ tempfile_output.path }}"
     file:
