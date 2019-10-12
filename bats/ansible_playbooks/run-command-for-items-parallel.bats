@@ -136,6 +136,29 @@ function setup {
     [ `grep 'START: item bbb: test value --><--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
     [ `grep 'END: item bbb: test value -->bbb<--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
 }
+
+@test "Should delete temporary created script file" {
+    # given
+    export STOP_DOCKER_CONTAINER_AFTER_TEST=true
+
+    sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project ansible_server /project/run-command-for-items.sh --parallel 'one' 'echo "$0" | tee /result_dir/result_file.xxx ; chmod 777 /result_dir/result_file.xxx'
+
+    run stat -c "%a %n" $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
+
+    # then
+    echo "output is --> $output <--" >&3
+    [ "${lines[0]}" = "777 $BATS_TMPDIR/$TIMESTAMP/result_file.xxx" ]
+    run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
+    echo "file output is --> $output <--"  >&3
+    [ -n "${lines[0]}" ]
+    SCRIPT_FILE_PATH="${lines[0]}"
+
+    # check that script file was deleted after command execution
+    # script file should not exist
+    run sudo docker exec ansible_server_bats_test test -e $SCRIPT_FILE_PATH
+    [ "$status" -ne 0 ]
+}
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
