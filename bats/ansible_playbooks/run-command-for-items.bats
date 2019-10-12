@@ -122,6 +122,21 @@ function setup {
     [ `grep 'zzz: end path /project/test' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
 }
 
+@test "should execute command for each item in new sub shell so that no variable setted by previous execution would be available for next command execution" {
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb' 'echo "START: item $CURRENT_ITEM: test value -->$TEST_VALUE<--" | tee -a /result_dir/sub_shell_test && export TEST_VALUE=$CURRENT_ITEM && echo "END: item $CURRENT_ITEM: test value -->$TEST_VALUE<--" | tee -a /result_dir/sub_shell_test'
+
+    echo "$output" >&3
+    [ "$status" -eq "0" ]
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/sub_shell_test" ]
+    echo "Test file output" >&3
+    cat $BATS_TMPDIR/$TIMESTAMP/sub_shell_test >&3
+    [ `grep 'START: item aaa: test value --><--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
+    [ `grep 'END: item aaa: test value -->aaa<--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
+    [ `grep 'START: item bbb: test value --><--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
+    [ `grep 'END: item bbb: test value -->bbb<--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
+}
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
