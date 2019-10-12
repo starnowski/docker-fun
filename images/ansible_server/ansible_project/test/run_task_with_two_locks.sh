@@ -28,5 +28,5 @@ else
     waitUntilBarrierWillBeRemoved "$LOCKS_DIR/barrier1.lock"
 fi
 
-touch "$LOCKS_DIR/$($ITEM)_finished"
-chmod 777 "$LOCKS_DIR/$($ITEM)_finished"
+touch "$LOCKS_DIR/${ITEM}_finished"
+chmod 777 "$LOCKS_DIR/${ITEM}_finished"
