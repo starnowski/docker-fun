@@ -3,8 +3,8 @@
   connection: local
   tasks:
     - name: Split command items
-        set_fact:
-          computed_command_items: "{{ _command_items.split('.') }}"
+      set_fact:
+        computed_command_items: "{{ _command_items.split('.') }}"
     - debug:
         msg: "{{ computed_command_items }}"
     - include_tasks: run_command_with_login_shell.yml
