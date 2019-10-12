@@ -12,7 +12,7 @@
       _script_path: "{{ tempfile_output.path }}"
   - name: "Running script {{ tempfile_output.path }}"
     command: bash -lc "{{ tempfile_output.path }}"
-    vars:
+    environment:
       CURRENT_ITEM: "{{ item }}"
     async: 1000
     poll: 0
