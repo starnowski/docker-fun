@@ -62,7 +62,17 @@ function setup {
     [ `grep 'Finished failing test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
     [ `grep 'Script should not fail' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
 
-    #TODO
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb:zzz' '/project/test/print_text_and_exit_zero.sh "$CURRENT_ITEM" aaa >> /result_dir/second_test'
+
+    echo "$output" >&3
+    [ "$status" -ne "0" ]
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
+    echo "Test file output" >&3
+    cat $BATS_TMPDIR/$TIMESTAMP/second_test >&3
+    [ `grep 'aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "0" ]
+    [ `grep 'bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
 
 function teardown {
