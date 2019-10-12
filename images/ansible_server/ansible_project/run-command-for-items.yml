@@ -4,10 +4,8 @@
   tasks:
     - name: Split command items
       set_fact:
-        computed_command_items: "{{ _command_items.split('.') }}"
+        computed_command_items: "{{ _command_items.split(':') }}"
     - debug:
         msg: "{{ computed_command_items }}"
-    - include_tasks: run_command_with_login_shell.yml
-      set_fact:
-        _command: "export CURRENT_ITEM=\"{{ item }}\";{{ _loop_command }}"
-      with_items: computed_command_items
+    - include_tasks: ./tasks/run_command_for_items/item_executor.yml
+      with_items: "{{ computed_command_items }}"

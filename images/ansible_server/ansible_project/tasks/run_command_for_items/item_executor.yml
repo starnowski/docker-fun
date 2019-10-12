@@ -1,0 +1,3 @@
+- set_fact:
+    _command: "export CURRENT_ITEM='{{ item }}';{{ _loop_command }}"
+- include_tasks: ./../../run_command_with_login_shell.yml
