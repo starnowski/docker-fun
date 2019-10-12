@@ -105,6 +105,23 @@ function setup {
     [ `grep 'Script failed: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
 
+@test "should execute command for each item in base directory" {
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh 'aaa:bbb:zzz' 'echo "$CURRENT_ITEM: start path $(pwd)" | tee -a /result_dir/base_dir_test && cd /project/test && echo "$CURRENT_ITEM: end path $(pwd)" | tee -a /result_dir/base_dir_test'
+
+    echo "$output" >&3
+    [ "$status" -eq "0" ]
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/base_dir_test" ]
+    echo "Test file output" >&3
+    cat $BATS_TMPDIR/$TIMESTAMP/base_dir_test >&3
+    [ `grep 'aaa: start path /project' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
+    [ `grep 'aaa: end path /project/test' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
+    [ `grep 'bbb: start path /project' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
+    [ `grep 'bbb: end path /project/test' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
+    [ `grep 'zzz: start path /project' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
+    [ `grep 'zzz: end path /project/test' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
+}
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
