@@ -43,6 +43,20 @@ function setup {
     [ `grep 'let it go' $BATS_TMPDIR/$TIMESTAMP/first_test | wc -l ` == "1" ]
 }
 
+@test "should execute command for each item and returns exit code non zero when execution for even one command will failed" {
+    # given
+    `$BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_non_zero.sh "Fail 76" > $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output`
+    [ "$?" = "1" ]
+    [ `grep 'Test 1 2 3' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
+    [ `grep 'Finished test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "0" ]
+    `$BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_zero.sh "Finished failing test" >> $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output`
+    [ "$?" = "1" ]
+    [ `grep 'Test 1 2 3' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
+    [ `grep 'Finished test' $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output | wc -l ` == "1" ]
+
+    #TODO
+}
+
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
