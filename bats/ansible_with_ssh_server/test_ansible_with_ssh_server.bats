@@ -31,7 +31,7 @@ function copy_non_root_user_ssh_private_key_from_container {
     chmod 600 $2
 }
 
-@test "Should run docker compose run ansible playbook which will be executed on container with ssh server" {
+@test "[test_ansible_with_ssh_server] Should run docker compose run ansible playbook which will be executed on container with ssh server" {
     # given
     pushd  $ANSIBLE_WITH_SSH_SERVER_DIR
     docker-compose up --detach  >&3
@@ -64,7 +64,7 @@ function copy_non_root_user_ssh_private_key_from_container {
     [ "$?" -eq 0 ]
 }
 
-@test "Should run docker compose and run ansible playbook and execute command in login shell mode on ssh server" {
+@test "[test_ansible_with_ssh_server] Should run docker compose and run ansible playbook and execute command in login shell mode on ssh server" {
     # given
     pushd  $ANSIBLE_WITH_SSH_SERVER_DIR
     docker-compose up --detach  >&3
