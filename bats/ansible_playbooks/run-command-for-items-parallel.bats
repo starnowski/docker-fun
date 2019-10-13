@@ -19,7 +19,7 @@ function setup {
   export STOP_DOCKER_CONTAINER_AFTER_TEST=
 }
 
-@test "should execute command for each item and returns exit code zero if execution for each item will succeed" {
+@test "[run-command-for-items-parallel] should execute command for each item and returns exit code zero if execution for each item will succeed" {
     # given
     $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_zero.sh "Test 1 2 3" > $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_zero_output
     [ "$?" = "0" ]
@@ -43,7 +43,7 @@ function setup {
     [ `grep 'let it go' $BATS_TMPDIR/$TIMESTAMP/first_test | wc -l ` == "1" ]
 }
 
-@test "should execute command for each item and returns exit code non zero when execution for the first command will failed" {
+@test "[run-command-for-items-parallel] should execute command for each item and returns exit code non zero when execution for the first command will failed" {
     # given
     $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/print_text_and_exit_non_zero.sh "Fail 76" "Fail 76" > $BATS_TMPDIR/$TIMESTAMP/test_print_text_and_exit_non_zero_output || script_failed="true"
     [ "$script_failed" == "true" ]
@@ -75,7 +75,7 @@ function setup {
     [ `grep 'Script succeeded: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
 
-@test "should execute command for each item and returns exit code non zero when execution for middle command will failed" {
+@test "[run-command-for-items-parallel] should execute command for each item and returns exit code non zero when execution for middle command will failed" {
 
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" bbb >> /result_dir/second_test'
@@ -90,7 +90,7 @@ function setup {
     [ `grep 'Script succeeded: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
 
-@test "should execute command for each item and returns exit code non zero when execution for the last command will failed" {
+@test "[run-command-for-items-parallel] should execute command for each item and returns exit code non zero when execution for the last command will failed" {
 
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" zzz >> /result_dir/second_test'
@@ -105,7 +105,7 @@ function setup {
     [ `grep 'Script failed: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
 }
 
-@test "should execute command for each item in base directory" {
+@test "[run-command-for-items-parallel] should execute command for each item in base directory" {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' 'echo "$CURRENT_ITEM: start path $(pwd)" | tee -a /result_dir/base_dir_test && cd /project/test && echo "$CURRENT_ITEM: end path $(pwd)" | tee -a /result_dir/base_dir_test'
 
@@ -122,7 +122,7 @@ function setup {
     [ `grep 'zzz: end path /project/test' $BATS_TMPDIR/$TIMESTAMP/base_dir_test | wc -l ` == "1" ]
 }
 
-@test "should execute command for each item in new sub shell so that no variable setted by previous execution would be available for next command execution" {
+@test "[run-command-for-items-parallel] should execute command for each item in new sub shell so that no variable setted by previous execution would be available for next command execution" {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb' 'echo "START: item $CURRENT_ITEM: test value -->$TEST_VALUE<--" | tee -a /result_dir/sub_shell_test && export TEST_VALUE=$CURRENT_ITEM && echo "END: item $CURRENT_ITEM: test value -->$TEST_VALUE<--" | tee -a /result_dir/sub_shell_test'
 
@@ -137,7 +137,7 @@ function setup {
     [ `grep 'END: item bbb: test value -->bbb<--' $BATS_TMPDIR/$TIMESTAMP/sub_shell_test | wc -l ` == "1" ]
 }
 
-@test "Should delete temporary created script file" {
+@test "[run-command-for-items-parallel] Should delete temporary created script file" {
     # given
     export STOP_DOCKER_CONTAINER_AFTER_TEST=true
 

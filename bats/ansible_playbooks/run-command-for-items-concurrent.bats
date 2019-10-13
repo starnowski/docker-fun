@@ -33,7 +33,7 @@ function waitUntilFinalFileWillBeCreated {
     set -e
 }
 
-@test "test script should wait until test method will not release lock barrier" {
+@test "[run-command-for-items-concurrent] test script should wait until test method will not release lock barrier" {
     # given
     touch $BATS_TMPDIR/$TIMESTAMP/barrier1.lock
     touch $BATS_TMPDIR/$TIMESTAMP/barrier2.lock
@@ -56,7 +56,7 @@ function waitUntilFinalFileWillBeCreated {
     [ -e $BATS_TMPDIR/$TIMESTAMP/l1_finished ]
 }
 
-@test "should run each command in parallel" {
+@test "[run-command-for-items-concurrent] should run each command in parallel" {
     # given
     touch $BATS_TMPDIR/$TIMESTAMP/barrier1.lock
     touch $BATS_TMPDIR/$TIMESTAMP/barrier2.lock

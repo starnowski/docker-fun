@@ -45,7 +45,7 @@ function remove_ssh_key_for_docker_container_hostname {
     ssh-keygen -R $1
 }
 
-@test "Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
+@test "[test_ssh_server] Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
     # given
     sudo docker run -d -P --name test_sshd centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
@@ -72,7 +72,7 @@ function remove_ssh_key_for_docker_container_hostname {
     [ "${lines[0]}" = 'John' ]
 }
 
-@test "Should print environment variable which was set for user when login via ssh and execute echo to print variable value" {
+@test "[test_ssh_server] Should print environment variable which was set for user when login via ssh and execute echo to print variable value" {
     # given
     sudo docker run -d -P --name test_sshd centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
