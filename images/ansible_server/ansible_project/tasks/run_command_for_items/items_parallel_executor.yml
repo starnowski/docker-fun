@@ -44,9 +44,9 @@
       msg: "After setting values"
 
   - include_tasks: ./compute_parallel_results.yml
-    loop: "{{ _command_result_register.results }}"
+    loop: "{{ async_poll_results.results }}"
     loop_control:
-      loop_var: "async_result_item"
+      loop_var: "loop_item"
 
   - debug:
       msg: "{{ computed_succeeded_executions_list }}"
