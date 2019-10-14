@@ -49,10 +49,10 @@
       loop_var: "loop_item"
 
   - debug:
-      msg: "{{ computed_succeeded_executions_list }}"
+      msg: "Command execution failed for items: {{ computed_failed_executions_list }}"
 
   - debug:
-      msg: "{{ computed_failed_executions_list }}"
+      msg: "Command execution succeeded for items: {{ computed_succeeded_executions_list }}"
 
   always:
   - name: "Deleting file {{ tempfile_output.path }}"

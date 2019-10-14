@@ -9,10 +9,10 @@
         _command_execution_failed: False
     - name: Set failed executions list
       set_fact:
-        computed_failed_executions_list: "Command execution failed for items: "
+        computed_failed_executions_list: ""
     - name: Set succeeded executions list
       set_fact:
-        computed_succeeded_executions_list: "Command execution succeeded for items: "
+        computed_succeeded_executions_list: ""
     - debug:
         msg: "{{ computed_command_items }}"
     - include_tasks: ./tasks/run_command_for_items/item_executor.yml
