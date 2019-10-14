@@ -66,6 +66,7 @@ function setup {
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" aaa >> /result_dir/second_test'
 
     echo "$output" >&3
+    echo "$output" >/home/szymon/git/ansible_test
     [ "$status" -ne "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
     echo "Test file output" >&3
