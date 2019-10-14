@@ -73,6 +73,11 @@ function setup {
     [ `grep 'Script failed: aaa' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
     [ `grep 'Script succeeded: bbb' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
     [ `grep 'Script succeeded: zzz' $BATS_TMPDIR/$TIMESTAMP/second_test | wc -l ` == "1" ]
+    echo "$output" | grep -m 1 'Command execution succeeded for items:' > $BATS_TMPDIR/$TIMESTAMP/successful_output
+    echo "$output" | grep -m 1 'Command execution failed for items:' > $BATS_TMPDIR/$TIMESTAMP/failed_output
+    [ `grep 'bbb' $BATS_TMPDIR/$TIMESTAMP/successful_output | wc -l ` == "1" ]
+    [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/successful_output | wc -l ` == "1" ]
+    [ `grep 'aaa' $BATS_TMPDIR/$TIMESTAMP/failed_output | wc -l ` == "1" ]
 }
 
 @test "[run-command-for-items-parallel] should execute command for each item and returns exit code non zero when execution for middle command will failed" {
@@ -158,6 +163,8 @@ function setup {
     run sudo docker exec ansible_server_bats_test test -e $SCRIPT_FILE_PATH
     [ "$status" -ne 0 ]
 }
+
+
 
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
