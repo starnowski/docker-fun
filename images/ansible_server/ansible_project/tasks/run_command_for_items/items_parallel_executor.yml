@@ -22,9 +22,12 @@
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
     with_items: "{{ computed_command_items }}"
 
-  - debug:
-      msg: "Before setting values"
-
+  - name: Set failed executions list
+    set_fact:
+      computed_failed_executions_list: ""
+  - name: Set succeeded executions list
+    set_fact:
+      computed_succeeded_executions_list: ""
 
   - name: Check sync status
     async_status:
@@ -39,9 +42,6 @@
     # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#retrying-a-task-until-a-condition-is-met
     retries: 30
     delay: 10
-
-  - debug:
-      msg: "After setting values"
 
   - include_tasks: ./compute_parallel_results.yml
     loop: "{{ async_poll_results.results }}"
