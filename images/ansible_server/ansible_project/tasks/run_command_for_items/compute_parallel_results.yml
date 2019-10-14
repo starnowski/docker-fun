@@ -1,0 +1,13 @@
+- debug:
+    msg: "{{ loop_item }}"
+- set_fact:
+    computed_failed_executions_list: "{{ computed_failed_executions_list }} {{ loop_item.async_result_item.item }}"
+  when: loop_item.failed
+
+- set_fact:
+    computed_succeeded_executions_list: "{{ computed_succeeded_executions_list }} {{ loop_item.async_result_item.item }}"
+  when: not loop_item.failed
+
+- set_fact:
+    _command_execution_failed: True
+  when: loop_item.failed
