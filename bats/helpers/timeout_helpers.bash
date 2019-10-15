@@ -12,4 +12,8 @@ function waitUntilFinalFileWillBeCreated {
         sleep 1
     done
     set -e
+    if [[ "$checkCount" == "$timeoutInSeconds" ]] ; then
+        >&2 echo "Timeout was exceeded while waiting for file \"$1\""
+        exit 1
+    fi
 }
