@@ -25,12 +25,13 @@ function setup {
     [ ! -e $BATS_TMPDIR/$TIMESTAMP/pid_file ]
 
     # when
-    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/run_hang_process.sh $BATS_TMPDIR/$TIMESTAMP/pid_file &
+    $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/run_hang_process.sh "$BATS_TMPDIR/$TIMESTAMP/pid_file" &
 
     # then
+    BACKGROUND_PROC_PID=$!
     [ -e $BATS_TMPDIR/$TIMESTAMP/pid_file ]
     cat $BATS_TMPDIR/$TIMESTAMP/pid_file >&3
-    export BACKGROUND_PROC_PID=`cat $BATS_TMPDIR/$TIMESTAMP/pid_file`
+    [ `cat $BATS_TMPDIR/$TIMESTAMP/pid_file` == "$BACKGROUND_PROC_PID" ]
     ps -p $BACKGROUND_PROC_PID
     CURRENT_PROCESS_PID="$$"
     [ "$CURRENT_PROCESS_PID" != "$BACKGROUND_PROC_PID" ]
