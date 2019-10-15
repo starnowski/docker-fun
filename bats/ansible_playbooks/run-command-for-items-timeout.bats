@@ -45,7 +45,7 @@ function setup {
     [ ! -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
 
     # when
-    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'xxx' '/project/test/run_hang_process.sh /result_dir/pid_file'
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'xxx' --asyncStatusRetries 1 --asyncStatusDelay 2 '/project/test/run_hang_process.sh /result_dir/pid_file'
 
     # then
     echo "$output" >&3
