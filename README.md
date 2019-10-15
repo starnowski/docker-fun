@@ -26,3 +26,6 @@ To check if you are in an interactive shell:
 To check if you are in a login shell:
 
 shopt -q login_shell && echo 'Login shell' || echo 'Not login shell'
+
+#Redirection and streams operation in Bash
+https://wiki.bash-hackers.org/howto/redirection_tutorial
