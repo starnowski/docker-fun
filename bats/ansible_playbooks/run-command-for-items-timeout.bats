@@ -40,7 +40,7 @@ function setup {
 }
 
 
-@test "[run-command-for-items-timeout] test script started in background should write its pid to test file and run constantly" {
+@test "[run-command-for-items-timeout] script should display information about unfinished command execution without information about success or failing" {
     # given
     [ ! -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
 
