@@ -16,7 +16,7 @@
     command: bash -lc "{{ tempfile_output.path }}"
     environment:
       CURRENT_ITEM: "{{ item }}"
-    async: 1000
+    async: "{{ _execute_command_parallel_async_timeout | default(1000, true) }}"
     poll: 0
     register: _command_result_register
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
@@ -31,10 +31,6 @@
   - name: Set unfinished executions list
     set_fact:
       computed_unfinished_executions_list: ""
-  - name: Set timeout executions list
-    set_fact:
-      computed_timeout_exceeded_executions_list: ""
-
 
   - name: Check sync status
     async_status:
@@ -63,9 +59,6 @@
 
   - debug:
       msg: "Command execution not finished for items: {{ computed_unfinished_executions_list }}"
-
-  - debug:
-      msg: "Command execution timeout exceeded for item: {{ computed_timeout_exceeded_executions_list }}"
 
   always:
   - name: "Deleting file {{ tempfile_output.path }}"

@@ -56,19 +56,17 @@ function setup {
     echo "$output" | grep -m 1 'Command execution succeeded for items:' > $BATS_TMPDIR/$TIMESTAMP/successful_output
     echo "$output" | grep -m 1 'Command execution failed for items:' > $BATS_TMPDIR/$TIMESTAMP/failed_output
     echo "$output" | grep -m 1 'Command execution not finished for items:' > $BATS_TMPDIR/$TIMESTAMP/unfinished_output
-    echo "$output" | grep -m 1 'Command execution timeout exceeded for item:' > $BATS_TMPDIR/$TIMESTAMP/timeout_output
     [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/successful_output | wc -l ` == "0" ]
     [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/failed_output | wc -l ` == "0" ]
     [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/unfinished_output | wc -l ` == "1" ]
-    [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/timeout_output | wc -l ` == "0" ]
 }
 
-@test "[run-command-for-items-timeout] script should display information about execution timeout without information about success, failing or unfinished command" {
+@test "[run-command-for-items-timeout] script should display information about unfinished execution without information about success, failing or unfinished command, after specifying timeout for single command execution" {
     # given
     [ ! -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
 
     # when
-    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'zzz' --asyncTimeout 5 '/project/test/run_hang_process.sh /result_dir/pid_file'
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'zzz' --asyncStatusRetries 1 --asyncStatusDelay 10 --asyncTimeout 2 '/project/test/run_hang_process.sh /result_dir/pid_file'
 
     # then
     echo "$output" >&3
@@ -79,11 +77,9 @@ function setup {
     echo "$output" | grep -m 1 'Command execution succeeded for items:' > $BATS_TMPDIR/$TIMESTAMP/successful_output
     echo "$output" | grep -m 1 'Command execution failed for items:' > $BATS_TMPDIR/$TIMESTAMP/failed_output
     echo "$output" | grep -m 1 'Command execution not finished for items:' > $BATS_TMPDIR/$TIMESTAMP/unfinished_output
-    echo "$output" | grep -m 1 'Command execution timeout exceeded for item:' > $BATS_TMPDIR/$TIMESTAMP/timeout_output
     [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/successful_output | wc -l ` == "0" ]
     [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/failed_output | wc -l ` == "0" ]
-    [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/unfinished_output | wc -l ` == "0" ]
-    [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/timeout_output | wc -l ` == "1" ]
+    [ `grep 'zzz' $BATS_TMPDIR/$TIMESTAMP/unfinished_output | wc -l ` == "1" ]
 }
 
 function teardown {
