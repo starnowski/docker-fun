@@ -40,8 +40,8 @@
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
     # The default value for “retries” is 3 and “delay” is 5.
     # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#retrying-a-task-until-a-condition-is-met
-    retries: 30
-    delay: 10
+    retries: "{{ _execute_command_parallel_async_status_retries | default(30, true) }}"
+    delay: "{{ _execute_command_parallel_async_status_delay | default(10, true) }}"
 
   - include_tasks: ./compute_parallel_results.yml
     loop: "{{ async_poll_results.results }}"
