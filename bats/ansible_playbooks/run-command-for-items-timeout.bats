@@ -32,6 +32,8 @@ function setup {
     cat $BATS_TMPDIR/$TIMESTAMP/pid_file >&3
     export BACKGROUND_PROC_PID=`cat $BATS_TMPDIR/$TIMESTAMP/pid_file`
     ps -p $BACKGROUND_PROC_PID
+    CURRENT_PROCESS_PID="$$"
+    [ "$CURRENT_PROCESS_PID" != "$BACKGROUND_PROC_PID" ]
 }
 
 function teardown {
