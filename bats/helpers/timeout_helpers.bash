@@ -2,7 +2,7 @@
 
 function waitUntilFinalFileWillBeCreated {
     checkCount=1
-    timeoutInSeconds=180
+    timeoutInSeconds=${2:-180}
     while : ; do
         set +e
         test -e "$1"

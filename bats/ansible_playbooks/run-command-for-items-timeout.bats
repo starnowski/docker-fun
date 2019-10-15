@@ -50,7 +50,7 @@ function setup {
     # then
     echo "$output" >&3
     [ "$status" -ne "0" ]
-    waitUntilFinalFileWillBeCreated "$BATS_TMPDIR/$TIMESTAMP/pid_file"
+    waitUntilFinalFileWillBeCreated "$BATS_TMPDIR/$TIMESTAMP/pid_file" 90
     [ -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
     cat $BATS_TMPDIR/$TIMESTAMP/pid_file >&3
     echo "$output" | grep -m 1 'Command execution succeeded for items:' > $BATS_TMPDIR/$TIMESTAMP/successful_output
