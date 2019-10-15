@@ -29,6 +29,7 @@ function setup {
 
     # then
     [ -e $BATS_TMPDIR/$TIMESTAMP/pid_file ]
+    cat $BATS_TMPDIR/$TIMESTAMP/pid_file >&3
     export BACKGROUND_PROC_PID=`cat $BATS_TMPDIR/$TIMESTAMP/pid_file`
     ps -p $BACKGROUND_PROC_PID
 }
