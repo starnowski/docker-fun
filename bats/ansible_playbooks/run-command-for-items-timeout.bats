@@ -21,7 +21,7 @@ function setup {
   load $BATS_TEST_DIRNAME/../helpers/timeout_helpers.bash
 }
 
-@test "[run-command-for-items-parallel] test script started in background should write its pid to test file and run constantly" {
+@test "[run-command-for-items-timeout] test script started in background should write its pid to test file and run constantly" {
     # given
     [ ! -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
 
@@ -37,6 +37,28 @@ function setup {
     ps -p $BACKGROUND_PROC_PID
     CURRENT_PROCESS_PID="$$"
     [ "$CURRENT_PROCESS_PID" != "$BACKGROUND_PROC_PID" ]
+}
+
+
+@test "[run-command-for-items-timeout] test script started in background should write its pid to test file and run constantly" {
+    # given
+    [ ! -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
+
+    # when
+    run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'xxx' '/project/test/run_hang_process.sh /result_dir/pid_file'
+
+    # then
+    echo "$output" >&3
+    [ "$status" -ne "0" ]
+    waitUntilFinalFileWillBeCreated "$BATS_TMPDIR/$TIMESTAMP/pid_file"
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
+    cat $BATS_TMPDIR/$TIMESTAMP/pid_file >&3
+    echo "$output" | grep -m 1 'Command execution succeeded for items:' > $BATS_TMPDIR/$TIMESTAMP/successful_output
+    echo "$output" | grep -m 1 'Command execution failed for items:' > $BATS_TMPDIR/$TIMESTAMP/failed_output
+    echo "$output" | grep -m 1 'Command execution not finished for items:' > $BATS_TMPDIR/$TIMESTAMP/unfinished_output
+    [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/successful_output | wc -l ` == "0" ]
+    [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/failed_output | wc -l ` == "0" ]
+    [ `grep 'xxx' $BATS_TMPDIR/$TIMESTAMP/unfinished_output | wc -l ` == "1" ]
 }
 
 function teardown {
