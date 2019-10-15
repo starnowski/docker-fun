@@ -28,6 +28,10 @@
   - name: Set succeeded executions list
     set_fact:
       computed_succeeded_executions_list: ""
+  - name: Set unfinished executions list
+    set_fact:
+      computed_unfinished_executions_list: ""
+
 
   - name: Check sync status
     async_status:
@@ -53,6 +57,9 @@
 
   - debug:
       msg: "Command execution succeeded for items: {{ computed_succeeded_executions_list }}"
+
+  - debug:
+      msg: "Command execution not finished for items: {{ computed_unfinished_executions_list }}"
 
   always:
   - name: "Deleting file {{ tempfile_output.path }}"
