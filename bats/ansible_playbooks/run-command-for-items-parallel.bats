@@ -164,8 +164,6 @@ function setup {
     [ "$status" -ne 0 ]
 }
 
-
-
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
     # Removing docker container for image "ansible_server"
