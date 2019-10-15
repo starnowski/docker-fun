@@ -18,20 +18,7 @@ function setup {
   mkdir -p $BATS_TMPDIR/$TIMESTAMP
   export STOP_DOCKER_CONTAINER_AFTER_TEST=
   export BACKGROUND_PROC_PID=
-}
-
-function waitUntilFinalFileWillBeCreated {
-    checkCount=1
-    timeoutInSeconds=180
-    while : ; do
-        set +e
-        test -e "$1"
-        [[ "$?" -ne 0 && $checkCount -ne $timeoutInSeconds ]] || break
-        checkCount=$(( checkCount+1 ))
-        echo "Waiting $checkCount seconds to final result file: $1"
-        sleep 1
-    done
-    set -e
+  load $BATS_TEST_DIRNAME/../helpers/timeout_helpers.bash
 }
 
 @test "[run-command-for-items-parallel] test script started in background should write its pid to test file and run constantly" {
