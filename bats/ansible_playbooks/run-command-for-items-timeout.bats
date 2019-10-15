@@ -20,16 +20,31 @@ function setup {
   export BACKGROUND_PROC_PID=
 }
 
+function waitUntilFinalFileWillBeCreated {
+    checkCount=1
+    timeoutInSeconds=180
+    while : ; do
+        set +e
+        test -e "$1"
+        [[ "$?" -ne 0 && $checkCount -ne $timeoutInSeconds ]] || break
+        checkCount=$(( checkCount+1 ))
+        echo "Waiting $checkCount seconds to final result file: $1"
+        sleep 1
+    done
+    set -e
+}
+
 @test "[run-command-for-items-parallel] test script started in background should write its pid to test file and run constantly" {
     # given
-    [ ! -e $BATS_TMPDIR/$TIMESTAMP/pid_file ]
+    [ ! -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
 
     # when
     $BATS_TEST_DIRNAME/../../images/ansible_server/ansible_project/test/run_hang_process.sh "$BATS_TMPDIR/$TIMESTAMP/pid_file" &
 
     # then
     BACKGROUND_PROC_PID=$!
-    [ -e $BATS_TMPDIR/$TIMESTAMP/pid_file ]
+    waitUntilFinalFileWillBeCreated "$BATS_TMPDIR/$TIMESTAMP/pid_file"
+    [ -e "$BATS_TMPDIR/$TIMESTAMP/pid_file" ]
     cat $BATS_TMPDIR/$TIMESTAMP/pid_file >&3
     [ `cat $BATS_TMPDIR/$TIMESTAMP/pid_file` == "$BACKGROUND_PROC_PID" ]
     ps -p $BACKGROUND_PROC_PID
