@@ -17,20 +17,7 @@ function setup {
   fi
   mkdir -p $BATS_TMPDIR/$TIMESTAMP
   export STOP_DOCKER_CONTAINER_AFTER_TEST=
-}
-
-function waitUntilFinalFileWillBeCreated {
-    checkCount=1
-    timeoutInSeconds=180
-    while : ; do
-        set +e
-        test -e "$1"
-        [[ "$?" -ne 0 && $checkCount -ne $timeoutInSeconds ]] || break
-        checkCount=$(( checkCount+1 ))
-        echo "Waiting $checkCount seconds to final result file: $1"
-        sleep 1
-    done
-    set -e
+  load $BATS_TEST_DIRNAME/../helpers/timeout_helpers.bash
 }
 
 @test "[run-command-for-items-concurrent] test script should wait until test method will not release lock barrier" {

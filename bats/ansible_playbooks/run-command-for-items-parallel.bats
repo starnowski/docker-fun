@@ -33,6 +33,7 @@ function setup {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'xx17:baba:let it go' '/project/test/print_text_and_exit_zero.sh "The item is $CURRENT_ITEM" >> /result_dir/first_test'
 
+    # then
     echo "$output" >&3
     [ "$status" -eq "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/first_test" ]
@@ -65,6 +66,7 @@ function setup {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" aaa >> /result_dir/second_test'
 
+    # then
     echo "$output" >&3
     [ "$status" -ne "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
@@ -100,6 +102,7 @@ function setup {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' '/project/test/print_text_and_exit_non_zero.sh "$CURRENT_ITEM" zzz >> /result_dir/second_test'
 
+    # then
     echo "$output" >&3
     [ "$status" -ne "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/second_test" ]
@@ -114,6 +117,7 @@ function setup {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb:zzz' 'echo "$CURRENT_ITEM: start path $(pwd)" | tee -a /result_dir/base_dir_test && cd /project/test && echo "$CURRENT_ITEM: end path $(pwd)" | tee -a /result_dir/base_dir_test'
 
+    # then
     echo "$output" >&3
     [ "$status" -eq "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/base_dir_test" ]
@@ -131,6 +135,7 @@ function setup {
     # when
     run sudo docker run --name ansible_server_bats_test -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project --rm ansible_server /project/run-command-for-items.sh --parallel 'aaa:bbb' 'echo "START: item $CURRENT_ITEM: test value -->$TEST_VALUE<--" | tee -a /result_dir/sub_shell_test && export TEST_VALUE=$CURRENT_ITEM && echo "END: item $CURRENT_ITEM: test value -->$TEST_VALUE<--" | tee -a /result_dir/sub_shell_test'
 
+    # then
     echo "$output" >&3
     [ "$status" -eq "0" ]
     [ -e "$BATS_TMPDIR/$TIMESTAMP/sub_shell_test" ]
@@ -163,8 +168,6 @@ function setup {
     run sudo docker exec ansible_server_bats_test test -e $SCRIPT_FILE_PATH
     [ "$status" -ne 0 ]
 }
-
-
 
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP

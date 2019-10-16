@@ -16,7 +16,7 @@
     command: bash -lc "{{ tempfile_output.path }}"
     environment:
       CURRENT_ITEM: "{{ item }}"
-    async: 1000
+    async: "{{ _execute_command_parallel_async_timeout | default(1000, true) }}"
     poll: 0
     register: _command_result_register
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
@@ -28,6 +28,9 @@
   - name: Set succeeded executions list
     set_fact:
       computed_succeeded_executions_list: ""
+  - name: Set unfinished executions list
+    set_fact:
+      computed_unfinished_executions_list: ""
 
   - name: Check sync status
     async_status:
@@ -40,8 +43,8 @@
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
     # The default value for “retries” is 3 and “delay” is 5.
     # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#retrying-a-task-until-a-condition-is-met
-    retries: 30
-    delay: 10
+    retries: "{{ _execute_command_parallel_async_status_retries | default(30, true) }}"
+    delay: "{{ _execute_command_parallel_async_status_delay | default(10, true) }}"
 
   - include_tasks: ./compute_parallel_results.yml
     loop: "{{ async_poll_results.results }}"
@@ -53,6 +56,9 @@
 
   - debug:
       msg: "Command execution succeeded for items: {{ computed_succeeded_executions_list }}"
+
+  - debug:
+      msg: "Command execution not finished for items: {{ computed_unfinished_executions_list }}"
 
   always:
   - name: "Deleting file {{ tempfile_output.path }}"
