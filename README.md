@@ -2,6 +2,27 @@
 
 # docker-fun
 
+
+* [Bash script which use ansible to parallel execution of specified command on localhost for specified array of items](#bash-script-with-ansible-parallel-command-exeuction)
+* [Useful links](#useful-links)
+
+
+[bash-script-with-ansible-parallel-command-exeuction]: #bash-script-with-ansible-parallel-command-exeuction
+# Bash script which use ansible to parallel execution of specified command on localhost for specified array of items
+
+* Main bash script ['run-command-for-items.sh'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.sh)
+* Main Ansible playbook  ['run-command-for-items.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.yml)
+* The Ansible tasks file which contains usage of 'async', 'poll' option as also module 'async_status' ['run-command-for-items.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/tasks/run_command_for_items/items_parallel_executor.yml)
+* The Ansible tasks file which sets facts with information like for which items the command execution succeeded, failed or did not finished ['compute_parallel_results.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/tasks/run_command_for_items/compute_parallel_results.yml)
+
+### Tests
+* Basic tests ['run-command-for-items-parallel.bats'](https://github.com/starnowski/docker-fun/blob/master/bats/ansible_playbooks/run-command-for-items-parallel.bats)
+* Tests which shows that commands are executed in parallel ['run-command-for-items-parallel.bats'](https://github.com/starnowski/docker-fun/blob/master/bats/ansible_playbooks/run-command-for-items-concurrent.bats)
+* Tests which shows that the main bash script can handle command timeout execution ['run-command-for-items-timeout.bats'](https://github.com/starnowski/docker-fun/blob/master/bats/ansible_playbooks/run-command-for-items-timeout.bats) 
+
+[useful-links]: #useful-links
+# Useful links
+
 https://github.com/ansible/ansible-examples
 
 
