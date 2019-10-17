@@ -12,6 +12,10 @@
 
 TODO
 
+* Main bash script ['run-command-for-items.sh'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.sh)
+* Main ansible playbook  ['run-command-for-items.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.yml)
+* The Ansible tasks file which contains usage of 'async', 'poll' option as also module 'async_status' ['run-command-for-items.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/tasks/run_command_for_items/items_parallel_executor.yml)
+
 [useful-links]: #useful-links
 # Useful links
 
