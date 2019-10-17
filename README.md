@@ -10,8 +10,6 @@
 [bash-script-with-ansible-parallel-command-exeuction]: #bash-script-with-ansible-parallel-command-exeuction
 # Bash script which use ansible to parallel execution of specified command on localhost for specified array of items
 
-TODO
-
 * Main bash script ['run-command-for-items.sh'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.sh)
 * Main Ansible playbook  ['run-command-for-items.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.yml)
 * The Ansible tasks file which contains usage of 'async', 'poll' option as also module 'async_status' ['run-command-for-items.yml'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/tasks/run_command_for_items/items_parallel_executor.yml)
