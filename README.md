@@ -2,6 +2,10 @@
 
 # docker-fun
 
+
+* [Bash script which use ansible to parallel execution of specified command on localhost for specified array of items](#how-to-attach-project)
+* [Useful links](#introduction)
+
 https://github.com/ansible/ansible-examples
 
 
