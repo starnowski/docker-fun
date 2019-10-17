@@ -3,11 +3,11 @@
 # docker-fun
 
 
-* [Bash script which use ansible to parallel execution of specified command on localhost for specified array of items](#bash-script-with-ansible-parallel-command-exeuction)
+* [Bash script which use ansible to parallel execution of specified command on localhost for specified array of items](#bash-script-which-use-ansible-to-parallel-execution-of-specified-command-on-localhost-for-specified-array-of-items)
 * [Useful links](#useful-links)
 
 
-[bash-script-with-ansible-parallel-command-exeuction]: #bash-script-with-ansible-parallel-command-exeuction
+[bash-script-which-use-ansible-to-parallel-execution-of-specified-command-on-localhost-for-specified-array-of-items]: #bash-script-which-use-ansible-to-parallel-execution-of-specified-command-on-localhost-for-specified-array-of-items
 # Bash script which use ansible to parallel execution of specified command on localhost for specified array of items
 
 * Main bash script ['run-command-for-items.sh'](https://github.com/starnowski/docker-fun/blob/master/images/ansible_server/ansible_project/run-command-for-items.sh)
