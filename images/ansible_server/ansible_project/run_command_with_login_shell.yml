@@ -9,8 +9,17 @@
   - include_tasks: tasks/create_shell_script.yml
     vars:
       _script_path: "{{ tempfile_output.path }}"
-  - name: "Running script {{ tempfile_output.path }}"
-    command: bash -lc "{{ tempfile_output.path }}"
+  - name: Setting full command
+    set_fact:
+      computed_command_content: ""
+  - name: Appending command wrapper script to final command
+    set_fact:
+      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_files_tempdir_output.path }}"
+  - name: Appending command wrapper script to final command
+    set_fact:
+      computed_command_content: "{{ computed_command_content }}{{ tempfile_output.path }}"
+  - name: "Running script {{ computed_command_content }}"
+    command: bash -lc "{{ computed_command_content }}"
     register: _command_result_register
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
   always:
