@@ -73,7 +73,7 @@ function setup {
     cp "$BATS_TEST_DIRNAME/uploaded_files/print_world.sh" "$BATS_TMPDIR/$TIMESTAMP/"
 
     # when
-    sudo docker exec ansible_server_bats_test  ansible-playbook -e '_run_command_files=/result_dir/print_hello.sh:/result_dir/print_world.sh' -e '_command="$RUN_COMMAND_FILES_DIR/print_hello.sh /result_dir/hello_output; $RUN_COMMAND_FILES_DIR/print_world.sh /result_dir/world_output"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+   run sudo docker exec ansible_server_bats_test  ansible-playbook -e '_run_command_files=/result_dir/print_hello.sh:/result_dir/print_world.sh' -e '_command="chmod +x $RUN_COMMAND_FILES_DIR/print_hello.sh; chmod +x $RUN_COMMAND_FILES_DIR/print_world.sh; $RUN_COMMAND_FILES_DIR/print_hello.sh /result_dir/hello_output; $RUN_COMMAND_FILES_DIR/print_world.sh /result_dir/world_output"' /project/run_command_with_login_shell_on_localhost.yml -vvv
 
     # then
    echo "$output" >&3
