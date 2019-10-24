@@ -6,15 +6,21 @@
       suffix: sh
     register: tempfile_output
   - include_tasks: tasks/upload_command_files.yml
+  - include_tasks: tasks/upload_command_scripts.yml
   - include_tasks: tasks/create_shell_script.yml
     vars:
       _script_path: "{{ tempfile_output.path }}"
   - name: Setting full command
     set_fact:
       computed_command_content: ""
-  - name: Appending command wrapper script to final command
+  - name: Appending to final command setting of variable which points to command files directory path
     set_fact:
       computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_files_tempdir_output.path }}; "
+    when: command_files_tempdir_output is defined
+  - name: Appending to final command setting of variable which points to command scripts directory path
+    set_fact:
+      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_scripts_tempdir_output.path }}; "
+    when: command_scripts_tempdir_output is defined
   - name: Appending command wrapper script to final command
     set_fact:
       computed_command_content: "{{ computed_command_content }}{{ tempfile_output.path }}"
