@@ -41,8 +41,6 @@ function setup {
     # when
     sudo docker exec ansible_server_bats_test  ansible-playbook -e '_run_command_files=result_dir/text_file_with_content' -e '_command="cat $RUN_COMMAND_FILES_DIR | tee /result_dir/test_output"' /project/run_command_with_login_shell_on_localhost.yml -vvv
 
-    echo "output is --> $output <--"  >&3
-
     # then
     run cat $BATS_TMPDIR/$TIMESTAMP/test_output
     echo "output is --> $output <--"  >&3
