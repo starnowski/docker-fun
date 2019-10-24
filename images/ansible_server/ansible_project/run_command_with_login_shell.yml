@@ -27,3 +27,4 @@
     file:
       path: "{{ tempfile_output.path }}"
       state:  absent
+    when: tempfile_output is defined
