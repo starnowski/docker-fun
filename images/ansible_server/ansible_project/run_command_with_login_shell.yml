@@ -14,7 +14,7 @@
       computed_command_content: ""
   - name: Appending command wrapper script to final command
     set_fact:
-      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_files_tempdir_output.path }}"
+      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_files_tempdir_output.path }}; "
   - name: Appending command wrapper script to final command
     set_fact:
       computed_command_content: "{{ computed_command_content }}{{ tempfile_output.path }}"
