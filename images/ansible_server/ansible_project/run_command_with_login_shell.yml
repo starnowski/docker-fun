@@ -16,11 +16,11 @@
   - name: Appending to final command setting of variable which points to command files directory path
     set_fact:
       computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_files_tempdir_output.path }}; "
-    when: command_files_tempdir_output is defined
+    when: command_files_tempdir_output is defined  and command_files_tempdir_output.path is defined
   - name: Appending to final command setting of variable which points to command scripts directory path
     set_fact:
-      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_scripts_tempdir_output.path }}; "
-    when: command_scripts_tempdir_output is defined
+      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_SCRIPTS_DIR={{ command_scripts_tempdir_output.path }}; "
+    when: command_scripts_tempdir_output is defined and command_scripts_tempdir_output.path is defined
   - name: Appending command wrapper script to final command
     set_fact:
       computed_command_content: "{{ computed_command_content }}{{ tempfile_output.path }}"
