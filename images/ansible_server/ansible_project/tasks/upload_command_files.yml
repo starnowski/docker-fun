@@ -10,6 +10,6 @@
   - name: Copy command files
     copy:
       src: "{{ item }}"
-      dest: "{{ tempfile_output.path }}/"
+      dest: "{{ command_files_tempdir_output.path }}/"
     with_items: "{{ computed_run_command_files }}"
   when: _run_command_files is defined
