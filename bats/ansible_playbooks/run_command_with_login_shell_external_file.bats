@@ -47,7 +47,6 @@ function setup {
     [ "${lines[0]}" = "This is test content" ]
 }
 
-# TODO Display uploaded file
 # TODO Run uploaded script
 
 # TODO Uploaded files are deleted
