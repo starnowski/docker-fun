@@ -66,6 +66,24 @@ function setup {
    [ `cat $BATS_TMPDIR/$TIMESTAMP/world` == "world" ]
 }
 
+@test "[run_command_with_login_shell_external_file] should run tests scripts passed during command execution" {
+    export STOP_DOCKER_CONTAINER_AFTER_TEST=true
+    sudo docker run --name ansible_server_bats_test -dt -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project ansible_server
+    cp "$BATS_TEST_DIRNAME/uploaded_files/print_hello.sh" "$BATS_TMPDIR/$TIMESTAMP/"
+    cp "$BATS_TEST_DIRNAME/uploaded_files/print_world.sh" "$BATS_TMPDIR/$TIMESTAMP/"
+
+    # when
+    sudo docker exec ansible_server_bats_test  ansible-playbook -e '_run_command_files=/result_dir/print_hello.sh:/result_dir/print_world.sh' -e '_command="$RUN_COMMAND_FILES_DIR/print_hello.sh /result_dir/hello_output; $RUN_COMMAND_FILES_DIR/print_world.sh /result_dir/world_output"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+
+    # then
+   echo "$output" >&3
+   [ $status -eq 0 ]
+   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/hello_output" ]
+   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/world_output" ]
+   [ `cat $BATS_TMPDIR/$TIMESTAMP/hello_output` == "hello" ]
+   [ `cat $BATS_TMPDIR/$TIMESTAMP/world_output` == "world" ]
+}
+
 # TODO Run uploaded script
 
 # TODO Uploaded files are deleted
