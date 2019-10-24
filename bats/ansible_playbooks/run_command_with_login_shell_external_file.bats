@@ -39,12 +39,12 @@ function setup {
     cp "$BATS_TEST_DIRNAME/uploaded_files/text_file_with_content" "$BATS_TMPDIR/$TIMESTAMP/"
 
     # when
-    sudo docker exec ansible_server_bats_test  ansible-playbook -e '_command="cat $RUN_COMMAND_FILES_DIR | tee /result_dir/test_file_content"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+    sudo docker exec ansible_server_bats_test  ansible-playbook -e '_run_command_files=result_dir/text_file_with_content' -e '_command="cat $RUN_COMMAND_FILES_DIR | tee /result_dir/test_output"' /project/run_command_with_login_shell_on_localhost.yml -vvv
 
     echo "output is --> $output <--"  >&3
 
     # then
-    run cat $BATS_TMPDIR/$TIMESTAMP/test_file_content
+    run cat $BATS_TMPDIR/$TIMESTAMP/test_output
     echo "output is --> $output <--"  >&3
     [ "${lines[0]}" = "This is test content" ]
 }
