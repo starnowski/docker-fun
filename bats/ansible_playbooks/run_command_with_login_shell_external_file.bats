@@ -1,6 +1,8 @@
 #
 # Usage:
 # bats -rt .
+# or run:
+# bats -t run_command_with_login_shell_external_file.bats
 #
 
 function setup {
@@ -17,6 +19,19 @@ function setup {
   fi
   mkdir -p $BATS_TMPDIR/$TIMESTAMP
   export STOP_DOCKER_CONTAINER_AFTER_TEST=
+}
+
+# TODO Test file with content "This is test content"
+@test "[run_command_with_login_shell_external_file] test file should contains text 'This is test content'" {
+   # given
+   [ -e "$BATS_TEST_DIRNAME/uploaded_files/text_file_with_content" ]
+
+   # when
+   run cat "$BATS_TEST_DIRNAME/uploaded_files/text_file_with_content"
+
+   # then
+   echo "$output" >&3
+   [ "${lines[0]}" = "This is test content" ]
 }
 
 # TODO Display uploaded file
