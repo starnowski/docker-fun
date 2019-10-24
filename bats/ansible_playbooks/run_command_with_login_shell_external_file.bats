@@ -60,8 +60,8 @@ function setup {
    # then
    echo "$output" >&3
    [ $status -eq 0 ]
-   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/hello" ]
-   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/world" ]
+   [ -e "$BATS_TMPDIR/$TIMESTAMP/hello" ]
+   [ -e "$BATS_TMPDIR/$TIMESTAMP/world" ]
    [ `cat $BATS_TMPDIR/$TIMESTAMP/hello` == "hello" ]
    [ `cat $BATS_TMPDIR/$TIMESTAMP/world` == "world" ]
 }
