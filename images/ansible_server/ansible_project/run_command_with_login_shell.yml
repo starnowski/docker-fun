@@ -5,6 +5,7 @@
       state: file
       suffix: sh
     register: tempfile_output
+  - include_tasks: tasks/upload_command_files.yml
   - include_tasks: tasks/create_shell_script.yml
     vars:
       _script_path: "{{ tempfile_output.path }}"
