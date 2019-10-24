@@ -47,6 +47,25 @@ function setup {
     [ "${lines[0]}" = "This is test content" ]
 }
 
+@test "[run_command_with_login_shell_external_file] test scripts should create specified files with certain content" {
+   # given
+   [ -e "$BATS_TEST_DIRNAME/uploaded_files/print_hello.sh" ]
+   [ -e "$BATS_TEST_DIRNAME/uploaded_files/print_world.sh" ]
+   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/hello" ]
+   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/world" ]
+
+   # when
+   run bash -lc "$BATS_TEST_DIRNAME/uploaded_files/print_hello.sh $BATS_TMPDIR/$TIMESTAMP/hello && $BATS_TEST_DIRNAME/uploaded_files/print_world.sh $BATS_TMPDIR/$TIMESTAMP/world"
+
+   # then
+   echo "$output" >&3
+   [ $status -eq 0 ]
+   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/hello" ]
+   [ ! -e "$BATS_TMPDIR/$TIMESTAMP/world" ]
+   [ `cat $BATS_TMPDIR/$TIMESTAMP/hello` == "hello" ]
+   [ `cat $BATS_TMPDIR/$TIMESTAMP/world` == "world" ]
+}
+
 # TODO Run uploaded script
 
 # TODO Uploaded files are deleted
