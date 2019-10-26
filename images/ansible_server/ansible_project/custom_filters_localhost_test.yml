@@ -3,4 +3,4 @@
   connection: local
   tasks:
     - debug:
-        msg: "{{ 'Szymon' | invite_statement }}"
+        msg: "{{ 'Szymon' | greetings_statement }}"
