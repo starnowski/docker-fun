@@ -1,0 +1,8 @@
+- name: Run passed command
+  hosts: localhost
+  connection: local
+  tasks:
+    - debug:
+        msg: "{{ 'Szymon' | greetings_statement }}"
+    - debug:
+        msg: "{{ inventory_hostname | host_location_statement }}"
