@@ -39,7 +39,7 @@
       path: "{{ command_files_tempdir_output.path }}"
       state:  absent
     when: command_files_tempdir_output is defined and command_files_tempdir_output.path is defined
-  - name: "Deleting script directory"
+  - name: "Deleting scripts directory"
     file:
       path: "{{ command_scripts_tempdir_output.path }}"
       state:  absent
