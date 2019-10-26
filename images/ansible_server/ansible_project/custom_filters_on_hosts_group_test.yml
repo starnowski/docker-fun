@@ -1,6 +1,5 @@
 - name: Run passed command
-  hosts: localhost
-  connection: local
+  hosts: "{{ hosts_group }}"
   tasks:
     - debug:
         msg: "{{ 'Szymon' | greetings_statement }}"
