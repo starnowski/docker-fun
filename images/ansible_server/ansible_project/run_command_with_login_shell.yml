@@ -29,8 +29,18 @@
     register: _command_result_register
     ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
   always:
-  - name: "Deleting file {{ tempfile_output.path }}"
+  - name: "Deleting script file"
     file:
       path: "{{ tempfile_output.path }}"
       state:  absent
-    when: tempfile_output is defined
+    when: tempfile_output is defined and tempfile_output.path is defined
+  - name: "Deleting files directory"
+    file:
+      path: "{{ command_files_tempdir_output.path }}"
+      state:  absent
+    when: command_files_tempdir_output is defined and command_files_tempdir_output.path is defined
+  - name: "Deleting script directory"
+    file:
+      path: "{{ command_scripts_tempdir_output.path }}"
+      state:  absent
+    when: command_scripts_tempdir_output is defined and command_scripts_tempdir_output.path is defined
