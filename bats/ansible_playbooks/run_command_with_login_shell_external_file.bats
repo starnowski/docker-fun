@@ -102,7 +102,33 @@ function setup {
    [ `cat $BATS_TMPDIR/$TIMESTAMP/world_output` == "world" ]
 }
 
-# TODO Uploaded files are deleted
+@test "[run_command_with_login_shell_external_file] should delete temporary directories for scripts and files after command execution" {
+    export STOP_DOCKER_CONTAINER_AFTER_TEST=true
+    sudo docker run --name ansible_server_bats_test -dt -v $BATS_TMPDIR/$TIMESTAMP:/result_dir -v $ANSIBLE_SERVER_DIR/ansible_project:/project ansible_server
+    cp "$BATS_TEST_DIRNAME/uploaded_files/print_hello.sh" "$BATS_TMPDIR/$TIMESTAMP/"
+    cp "$BATS_TEST_DIRNAME/uploaded_files/print_world.sh" "$BATS_TMPDIR/$TIMESTAMP/"
+    cp "$BATS_TEST_DIRNAME/uploaded_files/text_file_with_content" "$BATS_TMPDIR/$TIMESTAMP/"
+
+    # when
+   run sudo docker exec ansible_server_bats_test  ansible-playbook -e '_run_command_scripts=/result_dir/print_hello.sh:/result_dir/print_world.sh' -e '_run_command_files=/result_dir/text_file_with_content' -e '_command="echo $RUN_COMMAND_SCRIPTS_DIR | tee /result_dir/scripts_dir_path; echo $RUN_COMMAND_FILES_DIR | tee /result_dir/files_dir_path;"' /project/run_command_with_login_shell_on_localhost.yml -vvv
+
+    # then
+   echo "output is --> $output <--" >&3
+   [ "$status" -eq "0" ]
+
+   [ -e "$BATS_TMPDIR/$TIMESTAMP/scripts_dir_path" ]
+   [ -e "$BATS_TMPDIR/$TIMESTAMP/files_dir_path" ]
+
+   SCRIPT_DIR_PATH=`cat $BATS_TMPDIR/$TIMESTAMP/scripts_dir_path`
+   FILES_DIR_PATH=`cat $BATS_TMPDIR/$TIMESTAMP/files_dir_path`
+   # check that scripts and files directory were deleted after command execution
+   # script directory should not exist
+   run sudo docker exec ansible_server_bats_test test -e $SCRIPT_DIR_PATH
+   [ "$status" -ne 0 ]
+   # files directory should not exist
+   run sudo docker exec ansible_server_bats_test test -e $FILES_DIR_PATH
+   [ "$status" -ne 0 ]
+}
 
 function teardown {
     rm -rf $BATS_TMPDIR/$TIMESTAMP
