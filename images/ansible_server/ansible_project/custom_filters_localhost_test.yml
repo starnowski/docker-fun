@@ -1,0 +1,6 @@
+- name: Run passed command
+  hosts: localhost
+  connection: local
+  tasks:
+    - debug:
+      msg: "{{ 'Szymon' | invite_statement }}"
