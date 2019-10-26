@@ -3,6 +3,6 @@
   connection: local
   tasks:
     - debug:
-        msg: "{{ 'Szymon' | greetings_statement }}"
+        msg: "{{ _username | greetings_statement }}"
     - debug:
         msg: "{{ inventory_hostname | host_location_statement }}"
