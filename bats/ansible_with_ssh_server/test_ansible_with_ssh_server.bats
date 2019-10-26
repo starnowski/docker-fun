@@ -14,6 +14,7 @@ function setup {
   export ANSIBLE_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ansible_server"
   echo "docker compose dir is $ANSIBLE_WITH_SSH_SERVER_DIR" >&3
   mkdir -p $BATS_TMPDIR/John_keys
+  mkdir -p $BATS_TMPDIR/$TIMESTAMP
 }
 
 function resolve_ssh_server_container_id_by_image_name {
@@ -104,6 +105,28 @@ function copy_ansible_settings {
     run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     echo "output is --> $output <--"  >&3
     [ "${lines[0]}" = "_XXXX_$TIMESTAMP" ]
+}
+
+@test "[test_ansible_with_ssh_server] Should run docker compose  and run ansible playbook custom_filters_on_hosts_group_test with custom ansible filters" {
+    # given
+    pushd  $ANSIBLE_WITH_SSH_SERVER_DIR
+    docker-compose up --detach  >&3
+    docker-compose ps >&3
+
+    setup_docker_container_id
+    copy_ssh_keys_to_docker_container
+    copy_ansible_settings
+
+    # when
+    # https://stackoverflow.com/questions/18195142/safely-limiting-ansible-playbooks-to-a-single-machine - Setting host group
+    run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e '_username=Anna' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/custom_filters_on_hosts_group_test.yml -vvv
+
+    # then
+    echo "output is --> $output <--"  >&3
+    [ "$status" -eq 0 ]
+    echo "$output" > $BATS_TMPDIR/$TIMESTAMP/output_ansible
+    [ `grep 'Hello Anna, it is nice to meet you.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
+    [ `grep 'We are at test_ssh_server now.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1"
 }
 
 function teardown {
