@@ -100,7 +100,6 @@ function copy_ansible_settings {
     echo "output is --> $output <--"  >&3
 
     # then
-    mkdir $BATS_TMPDIR/$TIMESTAMP
     sudo docker cp test_ssh_server_container:/result_dir/result_file.xxx $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     echo "output is --> $output <--"  >&3
