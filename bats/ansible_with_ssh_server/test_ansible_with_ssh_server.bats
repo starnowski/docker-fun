@@ -126,6 +126,7 @@ function copy_ansible_settings {
     echo "$output" > $BATS_TMPDIR/$TIMESTAMP/output_ansible
     [ `grep 'Hello Anna, it is nice to meet you.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
     [ `grep 'We are at test_ssh_server now.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
+    [ `grep 'We are at test_ssh_server_group now.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
 }
 
 function teardown {
