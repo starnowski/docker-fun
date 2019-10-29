@@ -1,0 +1,2 @@
+- debug:
+    msg: "{{ hostvars[inventory_hostname].group_names[0] | host_location_statement }}"
