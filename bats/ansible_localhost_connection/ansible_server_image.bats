@@ -14,7 +14,7 @@ function setup {
 }
 
 
-@test "Should run container and print message that the executed container contains installed ansible in 2.8 version" {
+@test "[ansible_server_image] Should run container and print message that the executed container contains installed ansible in 2.8 version" {
     # given
     #docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
     
@@ -27,7 +27,7 @@ function setup {
     [ "${lines[0]}" = 'ansible 2.8.1' ]
 }
 
-@test "Should run container and return exit code passed by executed ansible 'command' module" {
+@test "[ansible_server_image] Should run container and return exit code passed by executed ansible 'command' module" {
     # given
     #docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
     
@@ -39,7 +39,7 @@ function setup {
     [ "$status" -eq 0 ]
 }
 
-@test "Should run container and return exit code '0' passed by executed ansible 'shell' module" {
+@test "[ansible_server_image] Should run container and return exit code '0' passed by executed ansible 'shell' module" {
     # given
     #docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
     
@@ -51,7 +51,7 @@ function setup {
     [ "$status" -eq 0 ]
 }
 
-@test "Should run container and return non-zero exit code passed by executed ansible 'shell' module" {
+@test "[ansible_server_image] Should run container and return non-zero exit code passed by executed ansible 'shell' module" {
     # given
     #docker build -t ansible_server $ANSIBLE_SERVER_DIR >&3
     

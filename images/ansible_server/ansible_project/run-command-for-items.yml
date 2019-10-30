@@ -1,0 +1,24 @@
+- name: Run passed command
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Split command items
+      set_fact:
+        computed_command_items: "{{ _command_items.split(':') }}"
+    - set_fact:
+        _command_execution_failed: False
+    - name: Set failed executions list
+      set_fact:
+        computed_failed_executions_list: ""
+    - name: Set succeeded executions list
+      set_fact:
+        computed_succeeded_executions_list: ""
+    - debug:
+        msg: "{{ computed_command_items }}"
+    - include_tasks: ./tasks/run_command_for_items/item_executor.yml
+      with_items: "{{ computed_command_items }}"
+      when: _execute_command_parallel is not defined or not _execute_command_parallel
+    - include_tasks: ./tasks/run_command_for_items/items_parallel_executor.yml
+      when: _execute_command_parallel is defined and _execute_command_parallel
+    - fail:
+      when: _command_execution_failed

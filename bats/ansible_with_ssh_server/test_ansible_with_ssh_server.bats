@@ -14,6 +14,7 @@ function setup {
   export ANSIBLE_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ansible_server"
   echo "docker compose dir is $ANSIBLE_WITH_SSH_SERVER_DIR" >&3
   mkdir -p $BATS_TMPDIR/John_keys
+  mkdir -p $BATS_TMPDIR/$TIMESTAMP
 }
 
 function resolve_ssh_server_container_id_by_image_name {
@@ -31,26 +32,35 @@ function copy_non_root_user_ssh_private_key_from_container {
     chmod 600 $2
 }
 
-@test "Should run docker compose run ansible playbook which will be executed on container with ssh server" {
+function setup_docker_container_id {
+    DOCKER_CONTAINER_ID=`resolve_ssh_server_container_id_by_image_name test_ssh_server_container`
+    #DOCKER_CONTAINER_ID=$(resolve_ssh_server_container_id_by_service_name)
+    echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
+}
+
+function copy_ssh_keys_to_docker_container {
+    # copy ssh keys
+    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa >&3
+    docker-compose exec test_ssh_server cp /home/John/.ssh/id_rsa /ssh_keys_vol/id_rsa >&3
+    docker-compose exec ansible_machine ls /ssh_keys_vol >&3
+}
+
+function copy_ansible_settings {
+    # copy ansible settings
+    DOCKER_CONTAINER_ID=`resolve_ssh_server_container_id_by_image_name ansible_machine_container`
+    run  docker-compose exec ansible_machine mkdir -p /etc/ansible
+    sudo docker cp $ANSIBLE_SERVER_DIR/ansible_project/ansible.cfg ansible_machine_container:/etc/ansible/ansible.cfg >&3
+}
+
+@test "[test_ansible_with_ssh_server] Should run docker compose run ansible playbook which will be executed on container with ssh server" {
     # given
     pushd  $ANSIBLE_WITH_SSH_SERVER_DIR
     docker-compose up --detach  >&3
     docker-compose ps >&3
 
-
-    DOCKER_CONTAINER_ID=`resolve_ssh_server_container_id_by_image_name test_ssh_server_container`
-    #DOCKER_CONTAINER_ID=$(resolve_ssh_server_container_id_by_service_name)
-    echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
-
-    # copy ssh keys
-    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa >&3
-    docker-compose exec test_ssh_server cp /home/John/.ssh/id_rsa /ssh_keys_vol/id_rsa >&3
-    docker-compose exec ansible_machine ls /ssh_keys_vol >&3
-
-    # copy ansible settings
-    DOCKER_CONTAINER_ID=`resolve_ssh_server_container_id_by_image_name ansible_machine_container`
-    run  docker-compose exec ansible_machine mkdir -p /etc/ansible
-    sudo docker cp $ANSIBLE_SERVER_DIR/ansible_project/ansible.cfg ansible_machine_container:/etc/ansible/ansible.cfg >&3
+    setup_docker_container_id
+    copy_ssh_keys_to_docker_container
+    copy_ansible_settings
 
     # when
     # https://stackoverflow.com/questions/18195142/safely-limiting-ansible-playbooks-to-a-single-machine - Setting host group
@@ -64,37 +74,25 @@ function copy_non_root_user_ssh_private_key_from_container {
     [ "$?" -eq 0 ]
 }
 
-@test "Should run docker compose and run ansible playbook and execute command in login shell mode on ssh server" {
+@test "[test_ansible_with_ssh_server] Should run docker compose and run ansible playbook and execute command in login shell mode on ssh server" {
     # given
     pushd  $ANSIBLE_WITH_SSH_SERVER_DIR
     docker-compose up --detach  >&3
     docker-compose ps >&3
 
-
-    DOCKER_CONTAINER_ID=`resolve_ssh_server_container_id_by_image_name test_ssh_server_container`
-    #DOCKER_CONTAINER_ID=$(resolve_ssh_server_container_id_by_service_name)
-    echo "Docker container id is $DOCKER_CONTAINER_ID" >&3
-
-    # copy ssh keys
-    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/John_keys/id_rsa >&3
-    docker-compose exec test_ssh_server cp /home/John/.ssh/id_rsa /ssh_keys_vol/id_rsa >&3
-    docker-compose exec ansible_machine ls /ssh_keys_vol >&3
+    setup_docker_container_id
+    copy_ssh_keys_to_docker_container
 
     # Setting environment variable for user "John"
     sudo docker exec $DOCKER_CONTAINER_ID bash -lc "echo \"export BASH_LOGINS_SHELL_TEST_VALUE=_XXXX_$TIMESTAMP\" >> /home/John/.bash_profile" >&3
     # print .bashrc file for "John" user
     sudo docker exec $DOCKER_CONTAINER_ID cat "/home/John/.bash_profile" >&3
 
-    # copy ansible settings
-    DOCKER_CONTAINER_ID=`resolve_ssh_server_container_id_by_image_name ansible_machine_container`
-    run  docker-compose exec ansible_machine mkdir -p /etc/ansible
-    sudo docker cp $ANSIBLE_SERVER_DIR/ansible_project/ansible.cfg ansible_machine_container:/etc/ansible/ansible.cfg >&3
+    copy_ansible_settings
 
     # create /result_dir
     docker-compose exec test_ssh_server mkdir /result_dir
     docker-compose exec test_ssh_server chmod 777 /result_dir
-
-
 
     # when
     # https://stackoverflow.com/questions/18195142/safely-limiting-ansible-playbooks-to-a-single-machine - Setting host group
@@ -102,11 +100,33 @@ function copy_non_root_user_ssh_private_key_from_container {
     echo "output is --> $output <--"  >&3
 
     # then
-    mkdir $BATS_TMPDIR/$TIMESTAMP
     sudo docker cp test_ssh_server_container:/result_dir/result_file.xxx $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     run cat $BATS_TMPDIR/$TIMESTAMP/result_file.xxx
     echo "output is --> $output <--"  >&3
     [ "${lines[0]}" = "_XXXX_$TIMESTAMP" ]
+}
+
+@test "[test_ansible_with_ssh_server] Should run docker compose  and run ansible playbook custom_filters_on_hosts_group_test with custom ansible filters" {
+    # given
+    pushd  $ANSIBLE_WITH_SSH_SERVER_DIR
+    docker-compose up --detach  >&3
+    docker-compose ps >&3
+
+    setup_docker_container_id
+    copy_ssh_keys_to_docker_container
+    copy_ansible_settings
+
+    # when
+    # https://stackoverflow.com/questions/18195142/safely-limiting-ansible-playbooks-to-a-single-machine - Setting host group
+    run  docker-compose exec ansible_machine ansible-playbook -i /project/hosts.ini -e '_username=Anna' -e 'hosts_group=test_ssh_server_group' -e "ansible_user=John" -e "ansible_ssh_private_key_file=/ssh_keys_vol/id_rsa" /project/custom_filters_on_hosts_group_test.yml -vvv
+
+    # then
+    echo "output is --> $output <--"  >&3
+    [ "$status" -eq 0 ]
+    echo "$output" > $BATS_TMPDIR/$TIMESTAMP/output_ansible
+    [ `grep 'Hello Anna, it is nice to meet you.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
+    [ `grep 'We are at test_ssh_server now.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
+    [ `grep 'We are at test_ssh_server_group now.' $BATS_TMPDIR/$TIMESTAMP/output_ansible | wc -l ` == "1" ]
 }
 
 function teardown {

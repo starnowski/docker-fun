@@ -5,13 +5,42 @@
       state: file
       suffix: sh
     register: tempfile_output
+  - include_tasks: tasks/upload_command_files.yml
+  - include_tasks: tasks/upload_command_scripts.yml
   - include_tasks: tasks/create_shell_script.yml
     vars:
       _script_path: "{{ tempfile_output.path }}"
-  - name: "Running script {{ tempfile_output.path }}"
-    command: bash -lc "{{ tempfile_output.path }}"
+  - name: Setting full command
+    set_fact:
+      computed_command_content: ""
+  - name: Appending to final command setting of variable which points to command files directory path
+    set_fact:
+      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_FILES_DIR={{ command_files_tempdir_output.path }}; "
+    when: command_files_tempdir_output is defined  and command_files_tempdir_output.path is defined
+  - name: Appending to final command setting of variable which points to command scripts directory path
+    set_fact:
+      computed_command_content: "{{ computed_command_content }} export RUN_COMMAND_SCRIPTS_DIR={{ command_scripts_tempdir_output.path }}; "
+    when: command_scripts_tempdir_output is defined and command_scripts_tempdir_output.path is defined
+  - name: Appending command wrapper script to final command
+    set_fact:
+      computed_command_content: "{{ computed_command_content }}{{ tempfile_output.path }}"
+  - name: "Running script {{ computed_command_content }}"
+    command: bash -lc "{{ computed_command_content }}"
+    register: _command_result_register
+    ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
   always:
-  - name: "Deleting file {{ tempfile_output.path }}"
+  - name: "Deleting script file"
     file:
       path: "{{ tempfile_output.path }}"
       state:  absent
+    when: tempfile_output is defined and tempfile_output.path is defined
+  - name: "Deleting files directory"
+    file:
+      path: "{{ command_files_tempdir_output.path }}"
+      state:  absent
+    when: command_files_tempdir_output is defined and command_files_tempdir_output.path is defined
+  - name: "Deleting scripts directory"
+    file:
+      path: "{{ command_scripts_tempdir_output.path }}"
+      state:  absent
+    when: command_scripts_tempdir_output is defined and command_scripts_tempdir_output.path is defined

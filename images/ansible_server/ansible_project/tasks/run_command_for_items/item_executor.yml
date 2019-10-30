@@ -1,0 +1,7 @@
+- set_fact:
+    _command: "export CURRENT_ITEM='{{ item }}';{{ _loop_command }}"
+    _command_ignore_errors: True
+- include_tasks: ./../../run_command_with_login_shell.yml
+- set_fact:
+    _command_execution_failed: True
+  when: _command_result_register.rc != 0

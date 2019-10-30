@@ -1,0 +1,67 @@
+- set_fact:
+    _command_ignore_errors: True
+    _command: "{{ _loop_command }}"
+- block:
+  - name: Create temporary file
+    tempfile:
+      state: file
+      suffix: sh
+    register: tempfile_output
+
+  - include_tasks: tasks/create_shell_script.yml
+    vars:
+      _script_path: "{{ tempfile_output.path }}"
+
+  - name: "Running script {{ tempfile_output.path }}"
+    command: bash -lc "{{ tempfile_output.path }}"
+    environment:
+      CURRENT_ITEM: "{{ item }}"
+    async: "{{ _execute_command_parallel_async_timeout | default(1000, true) }}"
+    poll: 0
+    register: _command_result_register
+    ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
+    with_items: "{{ computed_command_items }}"
+
+  - name: Set failed executions list
+    set_fact:
+      computed_failed_executions_list: ""
+  - name: Set succeeded executions list
+    set_fact:
+      computed_succeeded_executions_list: ""
+  - name: Set unfinished executions list
+    set_fact:
+      computed_unfinished_executions_list: ""
+
+  - name: Check sync status
+    async_status:
+      jid: "{{ async_result_item.ansible_job_id }}"
+    loop: "{{ _command_result_register.results }}"
+    loop_control:
+      loop_var: "async_result_item"
+    register: async_poll_results
+    until: async_poll_results.finished
+    ignore_errors: "{{ _command_ignore_errors | default(false, true) }}"
+    # The default value for “retries” is 3 and “delay” is 5.
+    # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#retrying-a-task-until-a-condition-is-met
+    retries: "{{ _execute_command_parallel_async_status_retries | default(30, true) }}"
+    delay: "{{ _execute_command_parallel_async_status_delay | default(10, true) }}"
+
+  - include_tasks: ./compute_parallel_results.yml
+    loop: "{{ async_poll_results.results }}"
+    loop_control:
+      loop_var: "loop_item"
+
+  - debug:
+      msg: "Command execution failed for items: {{ computed_failed_executions_list }}"
+
+  - debug:
+      msg: "Command execution succeeded for items: {{ computed_succeeded_executions_list }}"
+
+  - debug:
+      msg: "Command execution not finished for items: {{ computed_unfinished_executions_list }}"
+
+  always:
+  - name: "Deleting file {{ tempfile_output.path }}"
+    file:
+      path: "{{ tempfile_output.path }}"
+      state:  absent

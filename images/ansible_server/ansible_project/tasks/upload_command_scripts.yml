@@ -1,0 +1,16 @@
+- name: Upload command files
+  block:
+  - name: Split command files
+    set_fact:
+      computed_run_command_scripts: "{{ _run_command_scripts.split(':') }}"
+  - name: Create temporary directory for command files
+    tempfile:
+      state: directory
+    register: command_scripts_tempdir_output
+  - name: Copy command files
+    copy:
+      src: "{{ item }}"
+      dest: "{{ command_scripts_tempdir_output.path }}/"
+      mode: u+rwx
+    with_items: "{{ computed_run_command_scripts }}"
+  when: _run_command_scripts is defined

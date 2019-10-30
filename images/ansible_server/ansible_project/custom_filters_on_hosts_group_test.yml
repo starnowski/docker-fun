@@ -1,0 +1,8 @@
+- name: Run passed command
+  hosts: "{{ hosts_group }}"
+  tasks:
+    - debug:
+        msg: "{{ _username | greetings_statement }}"
+    - debug:
+        msg: "{{ inventory_hostname | host_location_statement }}"
+    - include_tasks:  ./tasks/filters_test/print_group_names.yml
