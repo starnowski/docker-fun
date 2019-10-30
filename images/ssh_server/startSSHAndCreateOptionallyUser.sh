@@ -26,7 +26,7 @@ done
 
 
 if [ -n "$OPTIONAL_SSH_USER" ]; then
-  echo "Creating user $OPTIONAL_SSH_USE"
+  echo "Creating user $OPTIONAL_SSH_USER"
   useradd -m -p Kent "$OPTIONAL_SSH_USER"
   mkdir -p "/home/$OPTIONAL_SSH_USER/.ssh"
   ssh-keygen -q -t rsa -N '' -f "/home/$OPTIONAL_SSH_USER/.ssh/id_rsa"
