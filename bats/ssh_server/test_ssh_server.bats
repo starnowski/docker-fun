@@ -119,6 +119,7 @@ function wait_until_container_status_will_be_healthy {
 
 @test "Should create user 'Mike' during container start up, the user which can login by ssh protocol" {
     # given
+    mkdir -p $BATS_TMPDIR/Mike_keys
     sudo docker run -d -P --name test_sshd -e OPTIONAL_SSH_USER=Mike centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
@@ -135,12 +136,13 @@ function wait_until_container_status_will_be_healthy {
     remove_ssh_key_for_docker_container_hostname $DOCKER_CONTAINER_HOSTNAME
 
     # when
-    run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/Mike_keys/id_rsa -o "StrictHostKeyChecking=no" -l Mike -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh'
+    run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/Mike_keys/id_rsa -o "StrictHostKeyChecking=no" -l Mike -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh && echo "Current user is "$(whoami)'
 
     # then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" =~ 'Test values is '\[$TEST_VALUE.*\] ]]
+    [[ "${lines[1]}" =~ 'Current user is Mike' ]]
 }
 
 
