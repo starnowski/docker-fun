@@ -46,6 +46,27 @@ function remove_ssh_key_for_docker_container_hostname {
     ssh-keygen -R $1
 }
 
+function wait_until_container_status_will_be_healthy {
+    checkCount=1
+    timeoutInSeconds=${2:-180}
+    set +e
+    local _inspect_output=''
+    while : ; do
+        _inspect_output=`docker inspect --format='{{json .State.Health}}' $1`
+        echo "Docker container status: $_inspect_output" >&3
+        echo "$_inspect_output" | grep '"Status":"healthy"'
+        [[ "$?" -ne 0 && $checkCount -ne $timeoutInSeconds ]] || break
+        checkCount=$(( checkCount+1 ))
+        echo "Waiting $checkCount seconds to final result file: $1" >&3
+        sleep 1
+    done
+    set -e
+    if [[ "$checkCount" == "$timeoutInSeconds" ]] ; then
+        >&2 echo "Timeout was exceeded while waiting for container \"$1\""
+        exit 1
+    fi
+}
+
 @test "[test_ssh_server] Should run docker container and be able to login via ssh as \"John\" user and execute echo \"whoami\" command" {
     # given
     sudo docker run -d -P --name test_sshd centos_7_ssh >&3
@@ -101,6 +122,9 @@ function remove_ssh_key_for_docker_container_hostname {
     sudo docker run -d -P --name test_sshd -e OPTIONAL_SSH_USER=Mike centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
+
+    # wait until docker container will be initialized
+    wait_until_container_status_will_be_healthy test_sshd 20
 
     # copy ssh keys
     copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/Mike_keys/id_rsa Mike
