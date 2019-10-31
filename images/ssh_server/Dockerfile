@@ -33,5 +33,10 @@ RUN echo "export VISIBLE=now" >> /etc/profile
 
 COPY ./printTestValue.sh /bin/printTestValue.sh
 
+COPY ./startSSHAndCreateOptionallyUser.sh /bin/startSSHAndCreateOptionallyUser1.sh
+COPY ./checkIfServerHealthy.sh /bin/checkIfServerHealthy.sh
+
+HEALTHCHECK --interval=10s --timeout=3s --retries=2 --start-period=10s CMD /bin/checkIfServerHealthy.sh || exit 1
+
 EXPOSE 22
-ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/bin/startSSHAndCreateOptionallyUser1.sh"]

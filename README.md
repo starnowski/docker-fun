@@ -64,3 +64,8 @@ https://github.com/ansible/ansible/blob/devel/lib/ansible/plugins/filter/json_qu
 
 #Ansible developer code formating
 https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html#module-documenting
+
+# Best practices for writing Dockerfiles
+https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+
+https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/
