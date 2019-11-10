@@ -14,7 +14,7 @@ set test_text [lindex $argv 3]
 
 set test_file_path [lindex $argv 3]
 
-spawn ssh "$user\@$ip && echo '$test_text' > '$test_file_path'"
+spawn ssh "$user\@$ip && echo 'Current user is $(pwd), $test_text' > '$test_file_path'"
 
 expect "Password:"
 
