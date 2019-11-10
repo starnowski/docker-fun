@@ -9,6 +9,6 @@ fi
 
 if [ -n "$PASSLOGINUSER_SSH_USER" ] && [ -n "$PASSLOGINUSER_SSH_PASSWORD" ]; then
   echo "Checking if user $PASSLOGINUSER_SSH_USER was created"
-  test -e "/home/$PASSLOGINUSER_SSH_USER/"
+  test -e "/home/$PASSLOGINUSER_SSH_USER"
 fi
 #TODO check ssh port

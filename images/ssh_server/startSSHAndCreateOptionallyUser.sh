@@ -35,7 +35,7 @@ fi
 
 if [ -n "$PASSLOGINUSER_SSH_USER" ] && [ -n "$PASSLOGINUSER_SSH_PASSWORD" ] ; then
   echo "Creating user $PASSLOGINUSER_SSH_USER with password $PASSLOGINUSER_SSH_PASSWORD"
-  export pass=$(perl -e "print crypt($PASSLOGINUSER_SSH_PASSWORD, 'salt')") && export USER_ENCRYPTED_PASS=$pass
+  export pass=$(perl -e "print crypt('$PASSLOGINUSER_SSH_PASSWORD', 'salt')") && export USER_ENCRYPTED_PASS=$pass
   useradd -m -p $USER_ENCRYPTED_PASS $PASSLOGINUSER_SSH_USER
 fi
 

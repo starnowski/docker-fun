@@ -12,8 +12,8 @@ function setup {
 
   export SSH_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ssh_server"
   echo "dockerfile dir is $SSH_SERVER_DIR" >&3
-  sudo docker build -t centos_7_ssh $SSH_SERVER_DIR >&3
-  #sudo docker build --no-cache -t centos_7_ssh $SSH_SERVER_DIR >&3
+  #sudo docker build -t centos_7_ssh $SSH_SERVER_DIR >&3
+  sudo docker build --no-cache -t centos_7_ssh $SSH_SERVER_DIR >&3
   load $BATS_TEST_DIRNAME/../helpers/docker_operations.bash
 }
 
