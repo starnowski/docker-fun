@@ -69,3 +69,10 @@ https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting
 https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
 
 https://www.cyberciti.biz/faq/linux-unix-ssh-proxycommand-passing-through-one-host-gateway-server/
+
+
+https://www.geeksforgeeks.org/expect-command-in-linux-with-examples/
+https://linux.die.net/man/1/expect
+https://srvfail.com/how-to-provide-ssh-password-inside-a-script-or-oneliner/
+
+
