@@ -13,7 +13,7 @@ function setup {
   export SSH_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ssh_server"
   echo "dockerfile dir is $SSH_SERVER_DIR" >&3
   sudo docker build -t centos_7_ssh $SSH_SERVER_DIR >&3
-  mkdir -p $BATS_TMPDIR/John_keys
+  load $BATS_TEST_DIRNAME/../helpers/docker_operations.bash
 }
 
 function resolve_container_id_by_image_name {
@@ -22,14 +22,6 @@ function resolve_container_id_by_image_name {
 
 function resolve_container_hostname_by_image_name {
     echo $(sudo docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' test_sshd)
-}
-
-function copy_non_root_user_ssh_private_key_from_container {
-    local _ssh_user=${3:-John}
-    sudo docker cp $1:/home/$_ssh_user/.ssh/id_rsa $2
-    # change owner
-    sudo chown $(whoami):$(whoami) $2
-    chmod 600 $2
 }
 
 #
@@ -69,7 +61,7 @@ function wait_until_container_status_will_be_healthy {
 
 @test "Should create user 'Don' during container start up, the user which can login by ssh protocol with password 'xxx569'" {
     # given
-    mkdir -p $BATS_TMPDIR/Mike_keys
+    mkdir -p $BATS_TMPDIR/test
     sudo docker run -d -P --name test_sshd -e PASSLOGINUSER_SSH_USER=Don -e PASSLOGINUSER_SSH_PASSWORD=xxx569 centos_7_ssh >&3
     DOCKER_CONTAINER_ID=$(resolve_container_id_by_image_name)
     DOCKER_CONTAINER_HOSTNAME=$(resolve_container_hostname_by_image_name)
@@ -78,21 +70,17 @@ function wait_until_container_status_will_be_healthy {
     wait_until_container_status_will_be_healthy test_sshd 20
 
     # copy ssh keys
-    copy_non_root_user_ssh_private_key_from_container $DOCKER_CONTAINER_ID $BATS_TMPDIR/Mike_keys/id_rsa Mike
-    sudo docker exec $DOCKER_CONTAINER_ID bash -lc "echo export TEST_VALUE=_XXXX_$TIMESTAMP >> /home/Mike/.bashrc" >&3
-    # print .bashrc file for "Mike" user
-    #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/Mike/.bashrc" >&3
-    #sudo docker exec $DOCKER_CONTAINER_ID cat "/home/Mike/.profile" >&3
-    remove_ssh_key_for_docker_container_hostname $DOCKER_CONTAINER_HOSTNAME
+    sudo docker exec $DOCKER_CONTAINER_ID bash -lc "mkdir -p /test_dir && chmod 777 /test_dir" >&3
 
     # when
-    run ssh -o LogLevel=ERROR -i $BATS_TMPDIR/Mike_keys/id_rsa -o "StrictHostKeyChecking=no" -l Mike -t $DOCKER_CONTAINER_HOSTNAME bash -i 'printTestValue.sh && echo "Current user is "$(whoami)'
+    run $BATS_TEST_DIRNAME/login_with_password_and_write_file.sh $DOCKER_CONTAINER_HOSTNAME Don xxx569 "This is a test!" /test_dir/output_file  >&3
 
     # then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
-    [[ "${lines[0]}" =~ 'Test values is '\[$TEST_VALUE.*\] ]]
-    [[ "${lines[1]}" =~ 'Current user is Mike' ]]
+    copy_from_container $DOCKER_CONTAINER_ID /test_dir/output_file $BATS_TMPDIR/test/output_file
+    run cat $BATS_TMPDIR/test/output_file
+    [[ "${lines[0]}" =~ 'Current user is Don, This is a test!' ]]
 }
 
 
