@@ -5,6 +5,7 @@ RUN yum install -y openssh-server
 RUN mkdir /var/run/sshd
 
 RUN yum install -y openssh-clients
+RUN yum install -y perl
 
 #
 # Could not load host key: /etc/ssh/ssh_host_rsa_key
