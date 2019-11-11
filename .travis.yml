@@ -43,7 +43,8 @@ jobs:
         - .travis/bats/bats-core-installation.sh "$TRAVIS_BUILD_DIR/.travis/bats"
       services:
         - docker
-      script: export PATH="$TRAVIS_BUILD_DIR/.travis/bats/bats-core/bin:$PATH" && bats -rt bats/ssh_server    - stage: "docker"
+      script: export PATH="$TRAVIS_BUILD_DIR/.travis/bats/bats-core/bin:$PATH" && bats -rt bats/ssh_server
+    - stage: "docker"
       name: "ssh server with password login"
       language: bash
       sudo: true
