@@ -12,8 +12,8 @@ function setup {
 
   export SSH_SERVER_DIR="$BATS_TEST_DIRNAME/../../images/ssh_server"
   echo "dockerfile dir is $SSH_SERVER_DIR" >&3
-  #sudo docker build -t centos_7_ssh $SSH_SERVER_DIR >&3
-  sudo docker build --no-cache -t centos_7_ssh $SSH_SERVER_DIR >&3
+  sudo docker build -t centos_7_ssh $SSH_SERVER_DIR >&3
+  #sudo docker build --no-cache -t centos_7_ssh $SSH_SERVER_DIR >&3
   load $BATS_TEST_DIRNAME/../helpers/docker_operations.bash
 }
 
@@ -72,16 +72,17 @@ function wait_until_container_status_will_be_healthy {
 
     # copy ssh keys
     sudo docker exec $DOCKER_CONTAINER_ID bash -lc "mkdir -p /test_dir && chmod 777 /test_dir" >&3
+    remove_ssh_key_for_docker_container_hostname $DOCKER_CONTAINER_HOSTNAME
 
     # when
-    run $BATS_TEST_DIRNAME/login_with_password_and_write_file.sh $DOCKER_CONTAINER_HOSTNAME Don xxx569 "This is a test!" /test_dir/output_file  >&3
+    run $BATS_TEST_DIRNAME/login_with_password_and_write_file.sh $DOCKER_CONTAINER_HOSTNAME Don xxx569 "This is a test" /test_dir/output_file  >&3
 
     # then
     echo "output is --> $output <--"  >&3
     [ "$status" -eq 0 ]
     copy_from_container $DOCKER_CONTAINER_ID /test_dir/output_file $BATS_TMPDIR/test/output_file
     run cat $BATS_TMPDIR/test/output_file
-    [[ "${lines[0]}" =~ 'Current user is Don, This is a test!' ]]
+    [[ "${lines[0]}" =~ 'Current user is Don, This is a test' ]]
 }
 
 

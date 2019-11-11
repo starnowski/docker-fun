@@ -10,10 +10,15 @@ set password [lindex $argv 2]
 
 set test_text [lindex $argv 3]
 
-set test_file_path [lindex $argv 3]
+set test_file_path [lindex $argv 4]
 
-spawn ssh "$user\@$ip && echo 'Current user is \$(pwd), $test_text' > '$test_file_path'"
+#spawn ssh -o LogLevel=ERROR -o "StrictHostKeyChecking=no"  "$user\@$ip"
+spawn ssh -o LogLevel=ERROR -o "StrictHostKeyChecking=no"  "$user\@$ip" "echo \"Current user is \$(whoami), $test_text\" | tee /test_dir/output_file"
 
 expect "Password:"
 
 send "$password\r";
+
+#send "echo \"Current user is \$(whoami), $test_text\" | tee /test_dir/output_file \r"
+
+expect eof
