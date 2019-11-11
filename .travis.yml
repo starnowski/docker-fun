@@ -51,7 +51,7 @@ jobs:
       before_install:
         # Install bats-core with version 1.1.0 when package will be available (see https://github.com/bats-core/bats-core/issues/103)
         - .travis/bats/bats-core-installation.sh "$TRAVIS_BUILD_DIR/.travis/bats"
-        - apt-get install -y expect || yum install -y expect
+        - sudo apt-get install -y expect || sudo yum install -y expect
       services:
         - docker
       script: export PATH="$TRAVIS_BUILD_DIR/.travis/bats/bats-core/bin:$PATH" && bats -rt bats/ssh_server_with_password_login
